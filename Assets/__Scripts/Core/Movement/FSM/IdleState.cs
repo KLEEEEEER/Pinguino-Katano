@@ -17,6 +17,12 @@ namespace PinguinoKatano.Core.Movement {
                 playerFSM.EnterState(playerFSM.jumpingState);
                 return;
             }
+
+            if (Input.GetKey(KeyCode.Mouse0))
+            {
+                playerFSM.EnterState(playerFSM.AttackingReadyState);
+                return;
+            }
         }
     }
 }

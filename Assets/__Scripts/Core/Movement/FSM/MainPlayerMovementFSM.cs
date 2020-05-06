@@ -6,11 +6,15 @@ namespace PinguinoKatano.Core.Movement
 {
     public class MainPlayerMovementFSM : MonoBehaviour
     {
-        private State currentState;
+        public State currentState;
         public Rigidbody rigidbody;
         public float movementSpeed;
         public float JumpingForce;
+        public float RollingForce;
         public bool AirControl = false;
+        public bool AttackControl = false;
+        [Range(0f, 10f)]
+        public float AttackControlMovementMultiplier = 1f;
 
         [Header("Transforms")]
         public Transform GroundCheckPoint;
@@ -23,12 +27,16 @@ namespace PinguinoKatano.Core.Movement
         public State idleState;
         public State jumpingState;
         public State RunningState;
+        public State AttackingReadyState;
+        public State RollingState;
 
         private void Start()
         {
             idleState = new IdleState();
             jumpingState = new JumpingState();
             RunningState = new RunningState();
+            AttackingReadyState = new AttackingReadyState();
+            RollingState = new RollingState();
 
             currentState = idleState;
         }
@@ -54,6 +62,11 @@ namespace PinguinoKatano.Core.Movement
             tempVelocity = tempVelocity * movementSpeed * speedModifier;
             tempVelocity.y = rigidbody.velocity.y;
             rigidbody.velocity = tempVelocity;
+        }
+
+        public bool IsMoving()
+        {
+            return (Mathf.Abs(horizontalInput) > 0 || Mathf.Abs(verticalInput) > 0);
         }
 
         private void FixedUpdate()

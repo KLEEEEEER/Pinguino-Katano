@@ -20,6 +20,18 @@ namespace PinguinoKatano.Core.Movement
                 return;
             }
 
+            if (Input.GetKey(KeyCode.Mouse0))
+            {
+                playerFSM.EnterState(playerFSM.AttackingReadyState);
+                return;
+            }
+
+            if (Input.GetKeyDown(KeyCode.LeftShift) && playerFSM.IsMoving())
+            {
+                Debug.Log("Shift pressed!");
+                playerFSM.EnterState(playerFSM.RollingState);
+            } 
+
             playerFSM.Move();
         }
     }
