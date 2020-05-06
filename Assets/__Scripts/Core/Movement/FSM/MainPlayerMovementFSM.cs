@@ -6,11 +6,14 @@ namespace PinguinoKatano.Core.Movement
 {
     public class MainPlayerMovementFSM : MonoBehaviour
     {
-        private State currentState;
+        public State currentState;
         public Rigidbody rigidbody;
         public float movementSpeed;
         public float JumpingForce;
         public bool AirControl = false;
+        public bool AttackControl = false;
+        [Range(0f, 10f)]
+        public float AttackControlMovementMultiplier = 1f;
 
         [Header("Transforms")]
         public Transform GroundCheckPoint;
@@ -23,12 +26,14 @@ namespace PinguinoKatano.Core.Movement
         public State idleState;
         public State jumpingState;
         public State RunningState;
+        public State AttackingReadyState;
 
         private void Start()
         {
             idleState = new IdleState();
             jumpingState = new JumpingState();
             RunningState = new RunningState();
+            AttackingReadyState = new AttackingReadyState();
 
             currentState = idleState;
         }
