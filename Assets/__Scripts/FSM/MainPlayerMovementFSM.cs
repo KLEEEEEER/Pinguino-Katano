@@ -49,10 +49,16 @@ namespace PinguinoKatano.Core.Movement
 
         public void Move(float speedModifier = 1f)
         {
-            Vector3 tempVelocity = rigidbody.velocity;
-            tempVelocity.x = horizontalInput * movementSpeed * speedModifier;
-            tempVelocity.z = verticalInput * movementSpeed * speedModifier;
+            /*Vector3 tempVelocity = rigidbody.velocity;
+            tempVelocity.x = horizontalInput;
+            tempVelocity.y = 0f;
+            tempVelocity.z = verticalInput;*/
+            Vector3 tempVelocity = new Vector3(horizontalInput, 0f, verticalInput);
+            tempVelocity = Vector3.ClampMagnitude(tempVelocity, 1f);
+            tempVelocity = tempVelocity * movementSpeed * speedModifier;
+            tempVelocity.y = rigidbody.velocity.y;
             rigidbody.velocity = tempVelocity;
+            Debug.Log(rigidbody.velocity);
         }
 
         private void FixedUpdate()
