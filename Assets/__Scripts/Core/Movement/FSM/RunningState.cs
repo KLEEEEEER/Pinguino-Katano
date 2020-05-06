@@ -20,6 +20,12 @@ namespace PinguinoKatano.Core.Movement
                 return;
             }
 
+            if (Input.GetKey(KeyCode.Mouse0))
+            {
+                playerFSM.EnterState(playerFSM.AttackingReadyState);
+                return;
+            }
+
             playerFSM.Move();
         }
     }
