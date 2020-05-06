@@ -2,17 +2,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RunningState : MonoBehaviour
+namespace PinguinoKatano.Core.Movement
 {
-    // Start is called before the first frame update
-    void Start()
+    public class RunningState : State
     {
-        
-    }
+        public override void OnUpdate(MainPlayerMovementFSM playerFSM)
+        {
+            if (Mathf.Abs(playerFSM.horizontalInput) == 0 && Mathf.Abs(playerFSM.verticalInput) == 0)
+            {
+                playerFSM.EnterState(playerFSM.idleState);
+                return;
+            }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                playerFSM.EnterState(playerFSM.jumpingState);
+                return;
+            }
+
+            playerFSM.Move();
+        }
     }
 }

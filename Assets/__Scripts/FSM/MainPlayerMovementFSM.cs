@@ -22,11 +22,13 @@ namespace PinguinoKatano.Core.Movement
 
         public State idleState;
         public State jumpingState;
+        public State RunningState;
 
         private void Start()
         {
             idleState = new IdleState();
             jumpingState = new JumpingState();
+            RunningState = new RunningState();
 
             currentState = idleState;
         }
