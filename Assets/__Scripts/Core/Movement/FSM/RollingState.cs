@@ -1,18 +1,26 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class RollingState : MonoBehaviour
+namespace PinguinoKatano.Core.Movement
 {
-    // Start is called before the first frame update
-    void Start()
+    public class RollingState : State
     {
-        
-    }
+        private float timerTime = 0;
+        private float timeBeforeRollCompleted = 1f;
+        public override void OnEnterState(MainPlayerMovementFSM playerFSM)
+        {
+            timerTime = 0;
+            Vector3 direction = new Vector3(playerFSM.horizontalInput, 2f, playerFSM.verticalInput);
+            playerFSM.rigidbody.AddForce(direction.normalized * playerFSM.RollingForce, ForceMode.Impulse);
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        public override void OnUpdate(MainPlayerMovementFSM playerFSM)
+        {
+            timerTime += Time.deltaTime;
+
+            if (timerTime >= timeBeforeRollCompleted)
+            {
+                playerFSM.EnterState(playerFSM.idleState);
+            }
+        }
     }
 }

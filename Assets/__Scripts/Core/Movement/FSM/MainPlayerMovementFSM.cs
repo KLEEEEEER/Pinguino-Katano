@@ -10,6 +10,7 @@ namespace PinguinoKatano.Core.Movement
         public Rigidbody rigidbody;
         public float movementSpeed;
         public float JumpingForce;
+        public float RollingForce;
         public bool AirControl = false;
         public bool AttackControl = false;
         [Range(0f, 10f)]
@@ -27,6 +28,7 @@ namespace PinguinoKatano.Core.Movement
         public State jumpingState;
         public State RunningState;
         public State AttackingReadyState;
+        public State RollingState;
 
         private void Start()
         {
@@ -34,6 +36,7 @@ namespace PinguinoKatano.Core.Movement
             jumpingState = new JumpingState();
             RunningState = new RunningState();
             AttackingReadyState = new AttackingReadyState();
+            RollingState = new RollingState();
 
             currentState = idleState;
         }
@@ -59,6 +62,11 @@ namespace PinguinoKatano.Core.Movement
             tempVelocity = tempVelocity * movementSpeed * speedModifier;
             tempVelocity.y = rigidbody.velocity.y;
             rigidbody.velocity = tempVelocity;
+        }
+
+        public bool IsMoving()
+        {
+            return (Mathf.Abs(horizontalInput) > 0 || Mathf.Abs(verticalInput) > 0);
         }
 
         private void FixedUpdate()

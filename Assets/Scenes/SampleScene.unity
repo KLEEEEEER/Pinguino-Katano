@@ -186,6 +186,7 @@ MonoBehaviour:
   rigidbody: {fileID: 65757229}
   movementSpeed: 10
   JumpingForce: 6
+  RollingForce: 3
   AirControl: 1
   AttackControl: 1
   AttackControlMovementMultiplier: 0.5
