@@ -29,6 +29,8 @@ namespace PinguinoKatano.Core.Movement
         public State AttackingReadyState;
         public State RollingState;
 
+        private float timerChangingRigidbodyVelocity;
+
         private void Start()
         {
             idleState = new IdleState();
@@ -57,13 +59,19 @@ namespace PinguinoKatano.Core.Movement
             currentState.OnUpdate(this);
         }
 
-        public void Move(float speedModifier = 1f)
+        public void MoveFixed(float speedModifier = 1f)
         {
             Vector3 tempVelocity = new Vector3(horizontalInput, 0f, verticalInput);
             tempVelocity = Vector3.ClampMagnitude(tempVelocity, 1f);
-            tempVelocity = tempVelocity * movementSpeed * speedModifier;
+            tempVelocity = tempVelocity * movementSpeed * speedModifier * Time.fixedDeltaTime;
             tempVelocity.y = rigidbody.velocity.y;
-            rigidbody.velocity = tempVelocity;
+
+            timerChangingRigidbodyVelocity += Time.fixedDeltaTime;
+
+            if (rigidbody.velocity != tempVelocity)
+            {
+                rigidbody.velocity = Vector3.Lerp(rigidbody.velocity, tempVelocity, 0.1f);
+            }
         }
 
         public bool IsMoving()

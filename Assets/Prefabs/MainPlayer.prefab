@@ -162,8 +162,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef2c4a13ad537e946b9a7a75f78b10da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
   rigidbody: {fileID: 1884203933801751564}
-  movementSpeed: 10
+  movementSpeed: 500
   JumpingForce: 6
   RollingForce: 3
   AirControl: 1
@@ -188,6 +190,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7e631005c358c6438f1c209d1bb86b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
   mainCamera: {fileID: 0}
   pointOfView: {fileID: 1884203933814389797}
 --- !u!114 &1884203933801751566
@@ -202,6 +206,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa75f433aff78d548a4202cfc844cfdb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
   mainPlayerMovementFSM: {fileID: 1884203933801751562}
 --- !u!114 &4671922016981891558
 MonoBehaviour:

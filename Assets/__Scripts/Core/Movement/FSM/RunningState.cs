@@ -31,8 +31,11 @@ namespace PinguinoKatano.Core.Movement
                 Debug.Log("Shift pressed!");
                 playerFSM.EnterState(playerFSM.RollingState);
             } 
+        }
 
-            playerFSM.Move();
+        public override void OnFixedUpdate(MainPlayerMovementFSM playerFSM)
+        {
+            playerFSM.MoveFixed();
         }
     }
 }
