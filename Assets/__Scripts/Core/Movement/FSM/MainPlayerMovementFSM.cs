@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using Mirror;
+using UnityEngine;
 
 namespace PinguinoKatano.Core.Movement
 {
-    public class MainPlayerMovementFSM : MonoBehaviour
+    public class MainPlayerMovementFSM : NetworkBehaviour
     {
         public State currentState;
         public Rigidbody rigidbody;
@@ -47,6 +48,7 @@ namespace PinguinoKatano.Core.Movement
 
         private void Update()
         {
+            if (!isLocalPlayer) return;
             horizontalInput = Input.GetAxisRaw("Horizontal");
             verticalInput   = Input.GetAxisRaw("Vertical");
 
@@ -69,6 +71,7 @@ namespace PinguinoKatano.Core.Movement
 
         private void FixedUpdate()
         {
+            if (!isLocalPlayer) return;
             currentState.OnFixedUpdate(this);
         }
 
