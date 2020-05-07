@@ -37,6 +37,8 @@ namespace PinguinoKatano.Core.Movement
             AttackingReadyState = new AttackingReadyState();
             RollingState = new RollingState();
 
+            //rigidbody.isKinematic = !isLocalPlayer;
+
             currentState = idleState;
         }
 

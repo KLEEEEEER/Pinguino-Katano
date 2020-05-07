@@ -4,7 +4,7 @@ namespace PinguinoKatano.Core.Movement {
     {
         public override void OnUpdate(MainPlayerMovementFSM playerFSM)
         {
-            playerFSM.Move();
+            //playerFSM.Move();
 
             if (Mathf.Abs(playerFSM.horizontalInput) > 0 || Mathf.Abs(playerFSM.verticalInput) > 0)
             {
