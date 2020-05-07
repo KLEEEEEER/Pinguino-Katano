@@ -1,10 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Networking;
 
 namespace PinguinoKatano.Core.Movement
 {
-    public class MainPlayerMovementFSM : MonoBehaviour
+    public class MainPlayerMovementFSM : NetworkBehaviour
     {
         public State currentState;
         public Rigidbody rigidbody;
@@ -49,6 +48,8 @@ namespace PinguinoKatano.Core.Movement
 
         private void Update()
         {
+            if (!isLocalPlayer) return;
+
             horizontalInput = Input.GetAxisRaw("Horizontal");
             verticalInput   = Input.GetAxisRaw("Vertical");
 

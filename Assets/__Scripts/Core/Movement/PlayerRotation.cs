@@ -9,6 +9,14 @@ namespace PinguinoKatano.Core.Movement
         [SerializeField] private Camera mainCamera;
         [SerializeField] private Transform pointOfView;
 
+        private void Start()
+        {
+            if (mainCamera == null)
+            {
+                mainCamera = Camera.main;
+            }
+        }
+
         void Update()
         {
             Vector3 mousePosition = Input.mousePosition;
