@@ -74,6 +74,21 @@ namespace PinguinoKatano.Core.Movement
             }
         }
 
+        public void ApplyForce(Vector3 force, ForceMode fMode)
+        {
+            rigidbody.AddForce(force, fMode);
+            CmdApplyForce(force, fMode);
+        }
+
+        [Command]
+        public void CmdApplyForce(Vector3 force, ForceMode fMode)
+        {
+            if (isLocalPlayer) return;
+
+            rigidbody.AddForce(force, fMode);
+        }
+
+
         public bool IsMoving()
         {
             return (Mathf.Abs(horizontalInput) > 0 || Mathf.Abs(verticalInput) > 0);
