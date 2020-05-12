@@ -3,7 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PinguinoKatanoNetworkManager : NetworkManager
+namespace PinguinoKatano.Network
 {
-    
+    public class PinguinoKatanoNetworkManager : NetworkManager
+    {
+
+    }
 }
