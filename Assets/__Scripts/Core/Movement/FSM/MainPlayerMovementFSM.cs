@@ -10,6 +10,7 @@ namespace PinguinoKatano.Core.Movement
         public float movementSpeed;
         public float JumpingForce;
         public float RollingForce;
+        public GameObject WeaponSlot;
         public bool AirControl = false;
         public bool AttackControl = false;
         [Range(0f, 10f)]
@@ -39,7 +40,7 @@ namespace PinguinoKatano.Core.Movement
             AttackingReadyState = new AttackingReadyState();
             RollingState = new RollingState();
 
-            //rigidbody.isKinematic = !isLocalPlayer;
+            rigidbody.isKinematic = !isLocalPlayer;
 
             currentState = idleState;
         }
@@ -52,9 +53,14 @@ namespace PinguinoKatano.Core.Movement
 
         private void Update()
         {
-            if (!isLocalPlayer) return;
+            if (!isLocalPlayer) 
+            {
+                return;
+            }
             horizontalInput = Input.GetAxisRaw("Horizontal");
             verticalInput   = Input.GetAxisRaw("Vertical");
+
+            
 
             currentState.OnUpdate(this);
         }
