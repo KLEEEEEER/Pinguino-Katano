@@ -11,8 +11,10 @@ namespace PinguinoKatano.Network
 
         [SyncVar(hook = nameof(HandleDisplayNameChanged))]
         public string DisplayName = "LOH";
-
+        [SyncVar(hook = nameof(HandleReadyStatusChanged))]
         public bool IsReady = false;
+
+        PlayerInList playerInListComponent;
 
         private bool isLeader;
         public bool IsLeader
@@ -37,8 +39,31 @@ namespace PinguinoKatano.Network
         public override void OnStartAuthority()
         {
             CmdSetDisplayName(PlayerNameInput.DisplayName);
-            MainMenuUI.Instance.DisableAllScreens();
-            lobbyUI.SetActive(true);
+
+            InstantiatePlayerInfo();
+        }
+
+        public override void OnStartClient()
+        {
+            Room.RoomPlayers.Add(this);
+
+            if (!hasAuthority)
+            {
+                InstantiatePlayerInfo();
+            }
+        }
+        public override void OnStopClient()
+        {
+            Room.RoomPlayers.Remove(this);
+            Destroy(playerInListComponent.gameObject);
+            return;
+        }
+
+        private void InstantiatePlayerInfo()
+        {
+            GameObject playerInfo = Instantiate(Room.PlayerLobbyInfoPrefab, Room.PlayerListLobbyRoot.transform);
+            playerInListComponent = playerInfo.GetComponent<PlayerInList>();
+            CmdUpdatePlayerInfo();
         }
 
         [Command]
@@ -47,11 +72,23 @@ namespace PinguinoKatano.Network
             DisplayName = newName;
         }
 
-        public void HandleDisplayNameChanged(string oldValue, string newValue) => UpdateDisplay();
+        public void HandleDisplayNameChanged(string oldValue, string newValue) => CmdUpdatePlayerInfo();
+        public void HandleReadyStatusChanged(bool oldValue, bool newValue) => CmdUpdatePlayerInfo();
 
-        private void UpdateDisplay()
+        [Command]
+        public void CmdUpdatePlayerInfo()
         {
+            RpcUpdatePlayerInfoOnClients();
+        }
 
+        [ClientRpc]
+        public void RpcUpdatePlayerInfoOnClients()
+        {
+            if (playerInListComponent != null)
+            {
+                playerInListComponent.PlayerName.text = DisplayName;
+                playerInListComponent.SetReady(IsReady);
+            }
         }
     }
 }

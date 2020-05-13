@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using PinguinoKatano.Network;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,7 +9,10 @@ public class MainMenuUI : MonoBehaviour
     [SerializeField] private GameObject mainTitleScreen;
     [SerializeField] private GameObject createLobbyScreen;
     [SerializeField] private GameObject joinLobbyScreen;
+    [SerializeField] private GameObject newLobbyScreen;
     [SerializeField] private GameObject[] screensToDisableFunction;
+
+    [SerializeField] private PinguinoKatanoNetworkManager networkManager = null;
 
     #region Singleton
     private static MainMenuUI instance;
@@ -46,6 +50,20 @@ public class MainMenuUI : MonoBehaviour
     {
         DisableAllScreens();
         joinLobbyScreen.SetActive(true);
+    }
+
+    public void OnMainMenu_JoinLobbyClick()
+    {
+        DisableAllScreens();
+        networkManager.StartClient();
+        newLobbyScreen.SetActive(true);
+    }
+
+    public void OnMainMenu_CreateLobbyClick()
+    {
+        networkManager.StartHost();
+        DisableAllScreens();
+        newLobbyScreen.SetActive(true);
     }
 
     public void BackToMainMenuClick()

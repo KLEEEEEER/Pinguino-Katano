@@ -58,11 +58,23 @@ MonoBehaviour:
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 1884203933801751563, guid: 0b8e93bea20ea9946a33297b664fea05,
+  playerPrefab: {fileID: 4011010171338658879, guid: 8a1024b9e60448d45a90bf22995df1fb,
     type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 1
   spawnPrefabs: []
+  minPlayers: 2
+  menuScene: Assets/Scenes/MainMenu.unity
+  numberOfPoints: 1
+  maps: []
+  roomPlayerPrefab: {fileID: 8311210294921410117, guid: 0b7b79a3a60642247a52f5e791f7980b,
+    type: 3}
+  PlayerListLobbyRoot: {fileID: 0}
+  PlayerLobbyInfoPrefab: {fileID: 3086047940814831896, guid: b8927acfce317414b981cd672ef11b22,
+    type: 3}
+  gamePlayerPrefab: {fileID: 0}
+  playerSpawnSystem: {fileID: 0}
+  roundSystem: {fileID: 0}
 --- !u!114 &10472668812043979
 MonoBehaviour:
   m_ObjectHideFlags: 0
