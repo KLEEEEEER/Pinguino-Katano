@@ -51,6 +51,10 @@ namespace PinguinoKatano.Network
             {
                 InstantiatePlayerInfo();
             }
+            else
+            {
+                MainMenuUI.Instance.OnReadyButtonClicked += CmdReadyUp;
+            }
         }
         public override void OnStopClient()
         {
@@ -63,7 +67,8 @@ namespace PinguinoKatano.Network
         {
             GameObject playerInfo = Instantiate(Room.PlayerLobbyInfoPrefab, Room.PlayerListLobbyRoot.transform);
             playerInListComponent = playerInfo.GetComponent<PlayerInList>();
-            CmdUpdatePlayerInfo();
+            if (hasAuthority)
+                CmdUpdatePlayerInfo();
         }
 
         [Command]
@@ -89,6 +94,23 @@ namespace PinguinoKatano.Network
                 playerInListComponent.PlayerName.text = DisplayName;
                 playerInListComponent.SetReady(IsReady);
             }
+        }
+
+        [Command]
+        public void CmdReadyUp()
+        {
+            RpcReadyUp();
+            //Room.NotifyPlayersOfReadyState();
+        }
+        [ClientRpc]
+        public void RpcReadyUp()
+        {
+            IsReady = !IsReady;
+        }
+
+        private void OnDestroy()
+        {
+            MainMenuUI.Instance.OnReadyButtonClicked -= CmdReadyUp;
         }
     }
 }

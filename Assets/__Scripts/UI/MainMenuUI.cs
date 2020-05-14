@@ -1,7 +1,9 @@
 ﻿using PinguinoKatano.Network;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MainMenuUI : MonoBehaviour
 {
@@ -12,7 +14,14 @@ public class MainMenuUI : MonoBehaviour
     [SerializeField] private GameObject newLobbyScreen;
     [SerializeField] private GameObject[] screensToDisableFunction;
 
+    public event Action OnReadyButtonClicked;
+
     [SerializeField] private PinguinoKatanoNetworkManager networkManager = null;
+
+    private void Start()
+    {
+        PinguinoKatanoNetworkManager.OnClientDisconnected += NetworkManager_OnClientDisconnected;
+    }
 
     #region Singleton
     private static MainMenuUI instance;
@@ -31,6 +40,10 @@ public class MainMenuUI : MonoBehaviour
     }
     #endregion
 
+    public void OnReadyButtonClickedEvent()
+    {
+        OnReadyButtonClicked?.Invoke();
+    }
     public void OnClickContinueNameButton()
     {
         if (PlayerNameInput.isValidateDisplayName())
@@ -66,7 +79,29 @@ public class MainMenuUI : MonoBehaviour
         newLobbyScreen.SetActive(true);
     }
 
+    public void BackFromCreatingLobby()
+    {
+        networkManager.StopHost();
+        DisableAllScreens();
+        mainTitleScreen.SetActive(true);
+    }
+
+    public void BackFromFoundingLobby()
+    {
+        networkManager.StopClient();
+        DisableAllScreens();
+        mainTitleScreen.SetActive(true);
+    }
+
     public void BackToMainMenuClick()
+    {
+        networkManager.StopClient();
+        networkManager.StopHost();
+        DisableAllScreens();
+        mainTitleScreen.SetActive(true);
+    }
+
+    private void NetworkManager_OnClientDisconnected()
     {
         DisableAllScreens();
         mainTitleScreen.SetActive(true);
@@ -78,5 +113,10 @@ public class MainMenuUI : MonoBehaviour
         {
             screen.SetActive(false);
         }
+    }
+
+    private void OnDestroy()
+    {
+        PinguinoKatanoNetworkManager.OnClientDisconnected -= NetworkManager_OnClientDisconnected;
     }
 }
