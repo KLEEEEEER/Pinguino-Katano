@@ -13,6 +13,7 @@ public class MainMenuUI : MonoBehaviour
     [SerializeField] private GameObject joinLobbyScreen;
     [SerializeField] private GameObject newLobbyScreen;
     [SerializeField] private GameObject[] screensToDisableFunction;
+    [SerializeField] private GameObject searchingLobbyText;
 
     public event Action OnReadyButtonClicked;
 
@@ -21,6 +22,7 @@ public class MainMenuUI : MonoBehaviour
     private void Start()
     {
         PinguinoKatanoNetworkManager.OnClientDisconnected += NetworkManager_OnClientDisconnected;
+        PinguinoKatanoNetworkManager.OnClientConnected += NetworkManager_OnClientConnected;
     }
 
     #region Singleton
@@ -70,6 +72,7 @@ public class MainMenuUI : MonoBehaviour
         DisableAllScreens();
         networkManager.StartClient();
         newLobbyScreen.SetActive(true);
+        searchingLobbyText.SetActive(true);
     }
 
     public void OnMainMenu_CreateLobbyClick()
@@ -77,6 +80,7 @@ public class MainMenuUI : MonoBehaviour
         networkManager.StartHost();
         DisableAllScreens();
         newLobbyScreen.SetActive(true);
+        searchingLobbyText.SetActive(false);
     }
 
     public void BackFromCreatingLobby()
@@ -105,6 +109,11 @@ public class MainMenuUI : MonoBehaviour
     {
         DisableAllScreens();
         mainTitleScreen.SetActive(true);
+    }
+
+    private void NetworkManager_OnClientConnected()
+    {
+        searchingLobbyText.SetActive(false);
     }
 
     public void DisableAllScreens()

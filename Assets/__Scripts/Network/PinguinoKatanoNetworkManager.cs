@@ -37,12 +37,16 @@ namespace PinguinoKatano.Network
         public List<RoomPlayer> RoomPlayers { get; } = new List<RoomPlayer>();
         public List<RoomPlayer> GamePlayers { get; } = new List<RoomPlayer>();
 
-        public override void OnStartServer() => spawnPrefabs = Resources.LoadAll<GameObject>("SpawnablePrefabs").ToList();
+        public override void OnStartServer() 
+        { 
+            spawnPrefabs = Resources.LoadAll<GameObject>("SpawnablePrefabs").ToList();
+            //UpdatePlayersList();
+        }
 
         public override void OnStartClient()
         {
             var spawnablePrefabs = Resources.LoadAll<GameObject>("SpawnablePrefabs");
-
+            UpdatePlayersList();
             foreach (var prefab in spawnablePrefabs)
             {
                 ClientScene.RegisterPrefab(prefab);
@@ -52,14 +56,14 @@ namespace PinguinoKatano.Network
         public override void OnClientConnect(NetworkConnection conn)
         {
             base.OnClientConnect(conn);
-
+            UpdatePlayersList();
             OnClientConnected?.Invoke();
         }
 
         public override void OnClientDisconnect(NetworkConnection conn)
         {
             base.OnClientDisconnect(conn);
-
+            UpdatePlayersList();
             OnClientDisconnected?.Invoke();
         }
 
@@ -78,6 +82,7 @@ namespace PinguinoKatano.Network
                 Debug.LogError($"{SceneManager.GetActiveScene().path} != {menuScene}");
                 return;
             }
+            UpdatePlayersList();
         }
 
         public override void OnServerAddPlayer(NetworkConnection conn)
@@ -91,6 +96,8 @@ namespace PinguinoKatano.Network
                 roomPlayerInstance.IsLeader = isLeader;
 
                 NetworkServer.AddPlayerForConnection(conn, roomPlayerInstance.gameObject);
+
+                UpdatePlayersList();
             }
         }
 
@@ -103,6 +110,8 @@ namespace PinguinoKatano.Network
                 RoomPlayers.Remove(player);
 
                 NotifyPlayersOfReadyState();
+
+                UpdatePlayersList();
             }
 
             base.OnServerDisconnect(conn);
@@ -111,6 +120,8 @@ namespace PinguinoKatano.Network
         public override void OnStopServer()
         {
             OnServerStopped?.Invoke();
+
+            UpdatePlayersList();
 
             RoomPlayers.Clear();
             GamePlayers.Clear();
@@ -179,10 +190,34 @@ namespace PinguinoKatano.Network
             }
         }
 
+        public void ClearPlayersList()
+        {
+            foreach (Transform child in PlayerListLobbyRoot.transform)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+
+        public void UpdatePlayersList()
+        {
+            ClearPlayersList();
+            foreach (RoomPlayer roomPlayer in RoomPlayers)
+            {
+                GameObject playerInfo = Instantiate(PlayerLobbyInfoPrefab, PlayerListLobbyRoot.transform);
+                PlayerInList playerInListComponent = playerInfo.GetComponent<PlayerInList>();
+                if (playerInListComponent != null)
+                {
+                    playerInListComponent.PlayerName.text = roomPlayer.DisplayName;
+                    playerInListComponent.SetReady(roomPlayer.IsReady);
+                }
+            }
+            Debug.Log("Updated players list. Players in RoomPlayers list " + RoomPlayers.Count);
+        }
+
         public override void OnServerReady(NetworkConnection conn)
         {
             base.OnServerReady(conn);
-
+            UpdatePlayersList();
             OnServerReadied?.Invoke(conn);
         }
     }

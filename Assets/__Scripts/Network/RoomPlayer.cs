@@ -39,19 +39,13 @@ namespace PinguinoKatano.Network
         public override void OnStartAuthority()
         {
             CmdSetDisplayName(PlayerNameInput.DisplayName);
-
-            InstantiatePlayerInfo();
         }
 
         public override void OnStartClient()
         {
             Room.RoomPlayers.Add(this);
 
-            if (!hasAuthority)
-            {
-                InstantiatePlayerInfo();
-            }
-            else
+            if (hasAuthority)
             {
                 MainMenuUI.Instance.OnReadyButtonClicked += CmdReadyUp;
             }
@@ -59,16 +53,7 @@ namespace PinguinoKatano.Network
         public override void OnStopClient()
         {
             Room.RoomPlayers.Remove(this);
-            Destroy(playerInListComponent.gameObject);
             return;
-        }
-
-        private void InstantiatePlayerInfo()
-        {
-            GameObject playerInfo = Instantiate(Room.PlayerLobbyInfoPrefab, Room.PlayerListLobbyRoot.transform);
-            playerInListComponent = playerInfo.GetComponent<PlayerInList>();
-            if (hasAuthority)
-                CmdUpdatePlayerInfo();
         }
 
         [Command]
