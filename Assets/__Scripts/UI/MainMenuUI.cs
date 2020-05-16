@@ -17,12 +17,9 @@ public class MainMenuUI : MonoBehaviour
 
     public event Action OnReadyButtonClicked;
 
-    [SerializeField] private PinguinoKatanoNetworkManager networkManager = null;
-
     private void Start()
     {
-        PinguinoKatanoNetworkManager.OnClientDisconnected += NetworkManager_OnClientDisconnected;
-        PinguinoKatanoNetworkManager.OnClientConnected += NetworkManager_OnClientConnected;
+
     }
 
     #region Singleton
@@ -70,14 +67,14 @@ public class MainMenuUI : MonoBehaviour
     public void OnMainMenu_JoinLobbyClick()
     {
         DisableAllScreens();
-        networkManager.StartClient();
+
         newLobbyScreen.SetActive(true);
         searchingLobbyText.SetActive(true);
     }
 
     public void OnMainMenu_CreateLobbyClick()
     {
-        networkManager.StartHost();
+
         DisableAllScreens();
         newLobbyScreen.SetActive(true);
         searchingLobbyText.SetActive(false);
@@ -85,22 +82,21 @@ public class MainMenuUI : MonoBehaviour
 
     public void BackFromCreatingLobby()
     {
-        networkManager.StopHost();
+
         DisableAllScreens();
         mainTitleScreen.SetActive(true);
     }
 
     public void BackFromFoundingLobby()
     {
-        networkManager.StopClient();
+
         DisableAllScreens();
         mainTitleScreen.SetActive(true);
     }
 
     public void BackToMainMenuClick()
     {
-        networkManager.StopClient();
-        networkManager.StopHost();
+
         DisableAllScreens();
         mainTitleScreen.SetActive(true);
     }
@@ -126,6 +122,6 @@ public class MainMenuUI : MonoBehaviour
 
     private void OnDestroy()
     {
-        PinguinoKatanoNetworkManager.OnClientDisconnected -= NetworkManager_OnClientDisconnected;
+
     }
 }
