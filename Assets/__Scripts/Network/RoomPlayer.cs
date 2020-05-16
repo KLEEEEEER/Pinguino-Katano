@@ -44,14 +44,17 @@ namespace PinguinoKatano.Network
         public override void OnStartClient()
         {
             Room.RoomPlayers.Add(this);
+            //CmdInstantiateLobbyPlayer_Server();
 
             if (hasAuthority)
             {
                 MainMenuUI.Instance.OnReadyButtonClicked += CmdReadyUp;
             }
         }
+
         public override void OnStopClient()
         {
+            //CmdRemoveLobbyPlayer_Server();
             Room.RoomPlayers.Remove(this);
             return;
         }
@@ -96,6 +99,60 @@ namespace PinguinoKatano.Network
         private void OnDestroy()
         {
             MainMenuUI.Instance.OnReadyButtonClicked -= CmdReadyUp;
+        }
+
+        public void UpdatePlayersList()
+        {
+            Debug.Log("UpdatePlayersList");
+            foreach (Transform child in Room.PlayerListLobbyRoot.transform)
+            {
+                Destroy(child.gameObject);
+            }
+
+            foreach (RoomPlayer roomPlayer in Room.RoomPlayers)
+            {
+                InstantiateLobbyPlayer(roomPlayer);
+            }
+        }
+
+        /*[Command]
+        public void CmdInstantiateLobbyPlayer_Server()
+        {
+            RpcInstantiateLobbyPlayer_Clients();
+        }
+
+        [ClientRpc]
+        public void RpcInstantiateLobbyPlayer_Clients()
+        {
+            InstantiateLobbyPlayer();
+        }*/
+
+        private void InstantiateLobbyPlayer(RoomPlayer roomPlayer)
+        {
+            GameObject playerInfo = Instantiate(Room.PlayerLobbyInfoPrefab, Room.PlayerListLobbyRoot.transform);
+            playerInListComponent = playerInfo.GetComponent<PlayerInList>();
+            if (playerInListComponent != null)
+            {
+                playerInListComponent.PlayerName.text = roomPlayer.DisplayName;
+                playerInListComponent.SetReady(roomPlayer.IsReady);
+            }
+        }
+
+        /*[Command]
+        public void CmdRemoveLobbyPlayer_Server()
+        {
+            RpcRemoveLobbyPlayer_Clients();
+        }
+
+        [ClientRpc]
+        public void RpcRemoveLobbyPlayer_Clients()
+        {
+            RemoveLobbyPlayer();
+        }*/
+
+        private void RemoveLobbyPlayer()
+        {
+            Destroy(playerInListComponent.gameObject);
         }
     }
 }

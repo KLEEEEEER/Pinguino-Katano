@@ -46,24 +46,26 @@ namespace PinguinoKatano.Network
         public override void OnStartClient()
         {
             var spawnablePrefabs = Resources.LoadAll<GameObject>("SpawnablePrefabs");
-            UpdatePlayersList();
             foreach (var prefab in spawnablePrefabs)
             {
                 ClientScene.RegisterPrefab(prefab);
             }
+            UpdatePlayersListOnClients();
         }
 
         public override void OnClientConnect(NetworkConnection conn)
         {
             base.OnClientConnect(conn);
-            UpdatePlayersList();
+            //UpdatePlayersList();
+            UpdatePlayersListOnClients();
             OnClientConnected?.Invoke();
         }
 
         public override void OnClientDisconnect(NetworkConnection conn)
         {
             base.OnClientDisconnect(conn);
-            UpdatePlayersList();
+            //UpdatePlayersList();
+            UpdatePlayersListOnClients();
             OnClientDisconnected?.Invoke();
         }
 
@@ -82,7 +84,8 @@ namespace PinguinoKatano.Network
                 Debug.LogError($"{SceneManager.GetActiveScene().path} != {menuScene}");
                 return;
             }
-            UpdatePlayersList();
+            UpdatePlayersListOnClients();
+            //UpdatePlayersList();
         }
 
         public override void OnServerAddPlayer(NetworkConnection conn)
@@ -96,8 +99,8 @@ namespace PinguinoKatano.Network
                 roomPlayerInstance.IsLeader = isLeader;
 
                 NetworkServer.AddPlayerForConnection(conn, roomPlayerInstance.gameObject);
-
-                UpdatePlayersList();
+                UpdatePlayersListOnClients();
+                //UpdatePlayersList();
             }
         }
 
@@ -111,7 +114,8 @@ namespace PinguinoKatano.Network
 
                 NotifyPlayersOfReadyState();
 
-                UpdatePlayersList();
+                UpdatePlayersListOnClients();
+                //UpdatePlayersList();
             }
 
             base.OnServerDisconnect(conn);
@@ -121,7 +125,7 @@ namespace PinguinoKatano.Network
         {
             OnServerStopped?.Invoke();
 
-            UpdatePlayersList();
+            //UpdatePlayersList();
 
             RoomPlayers.Clear();
             GamePlayers.Clear();
@@ -190,7 +194,7 @@ namespace PinguinoKatano.Network
             }
         }
 
-        public void ClearPlayersList()
+        /*public void ClearPlayersList()
         {
             foreach (Transform child in PlayerListLobbyRoot.transform)
             {
@@ -212,12 +216,21 @@ namespace PinguinoKatano.Network
                 }
             }
             Debug.Log("Updated players list. Players in RoomPlayers list " + RoomPlayers.Count);
+        }*/
+
+        public void UpdatePlayersListOnClients()
+        {
+            foreach (RoomPlayer roomPlayer in RoomPlayers)
+            {
+                roomPlayer.UpdatePlayersList();
+            }
         }
 
         public override void OnServerReady(NetworkConnection conn)
         {
             base.OnServerReady(conn);
-            UpdatePlayersList();
+            //UpdatePlayersList();
+            UpdatePlayersListOnClients();
             OnServerReadied?.Invoke(conn);
         }
     }
