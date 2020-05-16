@@ -1,16 +1,29 @@
-﻿using System.Collections;
+﻿using Mirror;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace PinguinoKatano.Core.Movement
 {
-    public class PlayerRotation : MonoBehaviour
+    public class PlayerRotation : NetworkBehaviour
     {
         [SerializeField] private Camera mainCamera;
         [SerializeField] private Transform pointOfView;
 
+        private void Start()
+        {
+            if (!isLocalPlayer) return;
+
+            if (mainCamera == null)
+            {
+                mainCamera = Camera.main;
+            }
+        }
+
         void Update()
         {
+            if (!isLocalPlayer) return;
+
             Vector3 mousePosition = Input.mousePosition;
 
             Vector3 playerOnCameraPosition = mainCamera.WorldToScreenPoint(pointOfView.position);

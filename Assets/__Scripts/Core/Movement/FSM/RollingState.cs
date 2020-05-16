@@ -9,8 +9,9 @@ namespace PinguinoKatano.Core.Movement
         public override void OnEnterState(MainPlayerMovementFSM playerFSM)
         {
             timerTime = 0;
-            Vector3 direction = new Vector3(playerFSM.horizontalInput, 2f, playerFSM.verticalInput);
-            playerFSM.rigidbody.AddForce(direction.normalized * playerFSM.RollingForce, ForceMode.Impulse);
+            Vector3 direction = new Vector3(playerFSM.horizontalInput, 0f, playerFSM.verticalInput);
+            //playerFSM.rigidbody.AddForce(direction.normalized * playerFSM.RollingForce, ForceMode.Impulse);
+            playerFSM.ApplyForce(direction.normalized * playerFSM.RollingForce, ForceMode.Impulse);
         }
 
         public override void OnUpdate(MainPlayerMovementFSM playerFSM)

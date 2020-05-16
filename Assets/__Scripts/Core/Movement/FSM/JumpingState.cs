@@ -10,20 +10,22 @@ namespace PinguinoKatano.Core.Movement
         {
             isJumping = false;
             timerTime = 0;
-            playerFSM.rigidbody.AddForce(Vector3.up * playerFSM.JumpingForce, ForceMode.Impulse);
+            //playerFSM.rigidbody.AddForce(Vector3.up * playerFSM.JumpingForce, ForceMode.Impulse);
+            playerFSM.ApplyForce(Vector3.up * playerFSM.JumpingForce, ForceMode.Impulse);
         }
 
         public override void OnUpdate(MainPlayerMovementFSM playerFSM)
         {
             if (!isJumping) timerTime += Time.deltaTime;
-            if (playerFSM.AirControl)
-            {
-                playerFSM.Move();
-            }
         }
 
         public override void OnFixedUpdate(MainPlayerMovementFSM playerFSM)
         {
+            if (playerFSM.AirControl)
+            {
+                playerFSM.MoveFixed();
+            }
+
             if (timerTime >= timeBeforeJumpCheck)
             {
                 isJumping = true;

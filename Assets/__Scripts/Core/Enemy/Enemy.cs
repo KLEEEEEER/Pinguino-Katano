@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace PinguinoKatano.Core.Enemy
 {
-    public class Enemy : MonoBehaviour, IDamageable
+    public class Enemy : MonoBehaviour
     {
         [SerializeField] private int currentHealth;
         [SerializeField] private int maxHealth;

@@ -5,25 +5,32 @@ using UnityEngine;
 
 public class AttackingReadyState : State
 {
+    private bool isAttacking;
     public override void OnEnterState(MainPlayerMovementFSM playerFSM)
     {
-        
+        isAttacking = false;
     }
     public override void OnUpdate(MainPlayerMovementFSM playerFSM)
     {
         if (Input.GetKey(KeyCode.Mouse0))
         {
-
+            playerFSM.WeaponSlot.SetActive(true);
+            isAttacking = true;
         }
         else
         {
+            playerFSM.WeaponSlot.SetActive(false);
+            isAttacking = false;
             playerFSM.EnterState(playerFSM.idleState);
             return;
         }
+    }
 
-        if (playerFSM.AttackControl)
+    public override void OnFixedUpdate(MainPlayerMovementFSM playerFSM)
+    {
+        if (playerFSM.AttackControl && isAttacking)
         {
-            playerFSM.Move(playerFSM.AttackControlMovementMultiplier);
+            playerFSM.MoveFixed(playerFSM.AttackControlMovementMultiplier);
         }
     }
 }

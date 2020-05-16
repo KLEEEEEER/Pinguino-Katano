@@ -1,16 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using Mirror;
 using UnityEngine;
 
 namespace PinguinoKatano.Core.Movement
 {
-    public class MainPlayerMovementFSM : MonoBehaviour
+    public class MainPlayerMovementFSM : NetworkBehaviour
     {
         public State currentState;
         public Rigidbody rigidbody;
         public float movementSpeed;
         public float JumpingForce;
         public float RollingForce;
+        public GameObject WeaponSlot;
         public bool AirControl = false;
         public bool AttackControl = false;
         [Range(0f, 10f)]
@@ -30,6 +30,8 @@ namespace PinguinoKatano.Core.Movement
         public State AttackingReadyState;
         public State RollingState;
 
+        private float timerChangingRigidbodyVelocity;
+
         private void Start()
         {
             idleState = new IdleState();
@@ -37,6 +39,8 @@ namespace PinguinoKatano.Core.Movement
             RunningState = new RunningState();
             AttackingReadyState = new AttackingReadyState();
             RollingState = new RollingState();
+
+            rigidbody.isKinematic = !isLocalPlayer;
 
             currentState = idleState;
         }
@@ -49,20 +53,47 @@ namespace PinguinoKatano.Core.Movement
 
         private void Update()
         {
+            if (!isLocalPlayer) 
+            {
+                return;
+            }
             horizontalInput = Input.GetAxisRaw("Horizontal");
             verticalInput   = Input.GetAxisRaw("Vertical");
+
+            
 
             currentState.OnUpdate(this);
         }
 
-        public void Move(float speedModifier = 1f)
+        public void MoveFixed(float speedModifier = 1f)
         {
             Vector3 tempVelocity = new Vector3(horizontalInput, 0f, verticalInput);
             tempVelocity = Vector3.ClampMagnitude(tempVelocity, 1f);
-            tempVelocity = tempVelocity * movementSpeed * speedModifier;
+            tempVelocity = tempVelocity * movementSpeed * speedModifier * Time.fixedDeltaTime;
             tempVelocity.y = rigidbody.velocity.y;
-            rigidbody.velocity = tempVelocity;
+
+            timerChangingRigidbodyVelocity += Time.fixedDeltaTime;
+
+            if (rigidbody.velocity != tempVelocity)
+            {
+                rigidbody.velocity = Vector3.Lerp(rigidbody.velocity, tempVelocity, 0.1f);
+            }
         }
+
+        public void ApplyForce(Vector3 force, ForceMode fMode)
+        {
+            rigidbody.AddForce(force, fMode);
+            CmdApplyForce(force, fMode);
+        }
+
+        [Command]
+        public void CmdApplyForce(Vector3 force, ForceMode fMode)
+        {
+            if (isLocalPlayer) return;
+
+            rigidbody.AddForce(force, fMode);
+        }
+
 
         public bool IsMoving()
         {
@@ -71,6 +102,7 @@ namespace PinguinoKatano.Core.Movement
 
         private void FixedUpdate()
         {
+            if (!isLocalPlayer) return;
             currentState.OnFixedUpdate(this);
         }
 
