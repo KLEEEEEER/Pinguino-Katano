@@ -1,9 +1,8 @@
-﻿using Mirror;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace PinguinoKatano.Core.Movement
 {
-    public class MainPlayerMovementFSM : NetworkBehaviour
+    public class MainPlayerMovementFSM : MonoBehaviour
     {
         public State currentState;
         public Rigidbody rigidbody;
@@ -40,8 +39,6 @@ namespace PinguinoKatano.Core.Movement
             AttackingReadyState = new AttackingReadyState();
             RollingState = new RollingState();
 
-            rigidbody.isKinematic = !isLocalPlayer;
-
             currentState = idleState;
         }
 
@@ -53,10 +50,6 @@ namespace PinguinoKatano.Core.Movement
 
         private void Update()
         {
-            if (!isLocalPlayer) 
-            {
-                return;
-            }
             horizontalInput = Input.GetAxisRaw("Horizontal");
             verticalInput   = Input.GetAxisRaw("Vertical");
 
@@ -85,12 +78,8 @@ namespace PinguinoKatano.Core.Movement
             rigidbody.AddForce(force, fMode);
             CmdApplyForce(force, fMode);
         }
-
-        [Command]
         public void CmdApplyForce(Vector3 force, ForceMode fMode)
         {
-            if (isLocalPlayer) return;
-
             rigidbody.AddForce(force, fMode);
         }
 
@@ -102,7 +91,6 @@ namespace PinguinoKatano.Core.Movement
 
         private void FixedUpdate()
         {
-            if (!isLocalPlayer) return;
             currentState.OnFixedUpdate(this);
         }
 

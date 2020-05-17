@@ -1,9 +1,8 @@
-﻿using Mirror;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Damageable : NetworkBehaviour
+public class Damageable : MonoBehaviour
 {
     [SerializeField] private Health health;
     [SerializeField] Color deadColor;
@@ -11,8 +10,7 @@ public class Damageable : NetworkBehaviour
     public void TakeDamage(float amount)
     {
         health.Remove(amount);
-        if (isLocalPlayer)
-            MainUIManager.Instance.ChangeHealthString(health.ToString());
+            //MainUIManager.Instance.ChangeHealthString(health.ToString());
 
         if (health.Current <= 0)
         {

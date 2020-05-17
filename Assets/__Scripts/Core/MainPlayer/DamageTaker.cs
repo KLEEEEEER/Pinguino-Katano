@@ -1,10 +1,9 @@
-﻿using Mirror;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DamageTaker : NetworkBehaviour
+public class DamageTaker
 {
     [SerializeField] private int health;
     [SerializeField] Color deadColor;
@@ -12,8 +11,7 @@ public class DamageTaker : NetworkBehaviour
     public void TakeDamage(int amount)
     {
         health -= amount;
-        if (isLocalPlayer)
-            MainUIManager.Instance.ChangeHealthString(health.ToString());
+            //MainUIManager.Instance.ChangeHealthString(health.ToString());
 
         if (health <= 0)
         {
