@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 181e91f5470e8c747bac07ad92175def, type: 3}
   m_Name: Snow temple
   m_EditorClassIdentifier: 
-  name: Assets/Scenes/map_SnowTemple.unity
+  scene: 
