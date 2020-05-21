@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
+using Bolt;
 
 namespace PinguinoKatano.Core.Movement
 {
-    public class MainPlayerMovementFSM : MonoBehaviour
+    public class MainPlayerMovementFSM : EntityBehaviour<IPenguinState>
     {
         public State currentState;
         public Rigidbody rigidbody;
@@ -31,6 +32,11 @@ namespace PinguinoKatano.Core.Movement
 
         private float timerChangingRigidbodyVelocity;
 
+        public override void Attached()
+        {
+            state.SetTransforms(state.Transform, transform);
+        }
+
         private void Start()
         {
             idleState = new IdleState();
@@ -53,9 +59,12 @@ namespace PinguinoKatano.Core.Movement
             horizontalInput = Input.GetAxisRaw("Horizontal");
             verticalInput   = Input.GetAxisRaw("Vertical");
 
-            
-
             currentState.OnUpdate(this);
+        }
+
+        public override void SimulateOwner()
+        {
+            currentState.OnFixedUpdate(this);
         }
 
         public void MoveFixed(float speedModifier = 1f)
@@ -76,11 +85,6 @@ namespace PinguinoKatano.Core.Movement
         public void ApplyForce(Vector3 force, ForceMode fMode)
         {
             rigidbody.AddForce(force, fMode);
-            CmdApplyForce(force, fMode);
-        }
-        public void CmdApplyForce(Vector3 force, ForceMode fMode)
-        {
-            rigidbody.AddForce(force, fMode);
         }
 
 
@@ -89,10 +93,10 @@ namespace PinguinoKatano.Core.Movement
             return (Mathf.Abs(horizontalInput) > 0 || Mathf.Abs(verticalInput) > 0);
         }
 
-        private void FixedUpdate()
+        /*private void FixedUpdate()
         {
             currentState.OnFixedUpdate(this);
-        }
+        }*/
 
         private void OnTriggerEnter(Collider other)
         {

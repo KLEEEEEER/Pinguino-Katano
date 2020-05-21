@@ -1,11 +1,14 @@
-﻿using PinguinoKatano.Network;
+﻿using Bolt;
+using Bolt.Matchmaking;
+using PinguinoKatano.Network;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UdpKit;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MainMenuUI : MonoBehaviour
+public class MainMenuUI : GlobalEventListener
 {
     [SerializeField] private GameObject changeNameScreen;
     [SerializeField] private GameObject mainTitleScreen;
@@ -67,17 +70,45 @@ public class MainMenuUI : MonoBehaviour
     public void OnMainMenu_JoinLobbyClick()
     {
         DisableAllScreens();
-
+        BoltLauncher.StartClient();
         newLobbyScreen.SetActive(true);
         searchingLobbyText.SetActive(true);
     }
 
     public void OnMainMenu_CreateLobbyClick()
     {
-
+        BoltLauncher.StartServer();
         DisableAllScreens();
         newLobbyScreen.SetActive(true);
         searchingLobbyText.SetActive(false);
+    }
+
+    public override void BoltStartDone()
+    {
+        if (BoltNetwork.IsServer)
+        {
+            string matchName = Guid.NewGuid().ToString();
+
+            BoltMatchmaking.CreateSession(
+                sessionID: matchName,
+                sceneToLoad: "map_SnowTemple"
+            );
+        }
+    }
+
+    public override void SessionListUpdated(Map<Guid, UdpSession> sessionList)
+    {
+        Debug.LogFormat("Session list updated: {0} total sessions", sessionList.Count);
+
+        foreach (var session in sessionList)
+        {
+            UdpSession photonSession = session.Value as UdpSession;
+
+            if (photonSession.Source == UdpSessionSource.Photon)
+            {
+                BoltMatchmaking.JoinSession(photonSession);
+            }
+        }
     }
 
     public void BackFromCreatingLobby()
@@ -101,7 +132,7 @@ public class MainMenuUI : MonoBehaviour
         mainTitleScreen.SetActive(true);
     }
 
-    private void NetworkManager_OnClientDisconnected()
+    /*private void NetworkManager_OnClientDisconnected()
     {
         DisableAllScreens();
         mainTitleScreen.SetActive(true);
@@ -110,7 +141,7 @@ public class MainMenuUI : MonoBehaviour
     private void NetworkManager_OnClientConnected()
     {
         searchingLobbyText.SetActive(false);
-    }
+    }*/
 
     public void DisableAllScreens()
     {
