@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 181e91f5470e8c747bac07ad92175def, type: 3}
   m_Name: Snow temple
   m_EditorClassIdentifier: 
-  scene: 
+  scene: {fileID: 102900000, guid: 9fc0d4010bbf28b4594072e72b8655ab, type: 3}
+  thumbnail: {fileID: 0}
+  description: Snow Temple

@@ -18,6 +18,10 @@ public class MainMenuUI : GlobalEventListener
     [SerializeField] private GameObject[] screensToDisableFunction;
     [SerializeField] private GameObject searchingLobbyText;
 
+    List<GameSessionButton> gameSessions = new List<GameSessionButton>();
+    [SerializeField] private GameObject sessionsListContent;
+    [SerializeField] private GameObject sessionPrefab;
+
     public event Action OnReadyButtonClicked;
 
     private void Start()
@@ -64,6 +68,7 @@ public class MainMenuUI : GlobalEventListener
     public void OnMainMenu_JoinClick()
     {
         DisableAllScreens();
+        BoltLauncher.StartClient();
         joinLobbyScreen.SetActive(true);
     }
 
@@ -100,14 +105,36 @@ public class MainMenuUI : GlobalEventListener
     {
         Debug.LogFormat("Session list updated: {0} total sessions", sessionList.Count);
 
+        clearSessions();
+
         foreach (var session in sessionList)
         {
             UdpSession photonSession = session.Value as UdpSession;
 
             if (photonSession.Source == UdpSessionSource.Photon)
             {
-                BoltMatchmaking.JoinSession(photonSession);
+                addSession(photonSession);
             }
+        }
+    }
+
+    private void clearSessions()
+    {
+        gameSessions.Clear();
+        foreach (Transform child in sessionsListContent.transform)
+        {
+            Destroy(child.gameObject);
+        }
+    }
+
+    private void addSession(UdpSession photonSession)
+    {
+        GameObject newSessionItem = Instantiate(sessionPrefab, sessionsListContent.transform);
+        GameSessionButton newSessionItemGameSession = newSessionItem.GetComponent<GameSessionButton>();
+        if (newSessionItemGameSession != null)
+        {
+            newSessionItemGameSession.SetSessionInfo(photonSession);
+            gameSessions.Add(newSessionItemGameSession);
         }
     }
 
