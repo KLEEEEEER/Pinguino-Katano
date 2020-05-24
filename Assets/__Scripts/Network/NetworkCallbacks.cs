@@ -8,6 +8,8 @@ namespace PinguinoKatano.Network
     [BoltGlobalBehaviour]
     public class NetworkCallbacks : GlobalEventListener
     {
+        public static List<Health> AllPlayers = new List<Health>();
+
         public override void SceneLoadLocalDone(string scene)
         {
             // randomize a position
@@ -37,6 +39,17 @@ namespace PinguinoKatano.Network
         public override void OnEvent(LogEvent evnt)
         {
             logMessages.Insert(0, evnt.Message);
+        }
+
+        private void FixedUpdate()
+        {
+            foreach (Health player in AllPlayers)
+            {
+                if (player.entity && player.state.IsDead && player.state.RespawnFrame <= BoltNetwork.ServerFrame)
+                {
+                    player.Spawn();
+                }
+            }
         }
     }
 }

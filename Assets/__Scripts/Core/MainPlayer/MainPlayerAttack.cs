@@ -29,7 +29,7 @@ public class MainPlayerAttack : EntityBehaviour<IPenguinState>
                     Collider hit = hits[i];
                     if (hit.gameObject == gameObject) continue;
                     var serializer = hit.GetComponent<BoltEntity>();
-                    if (serializer != null)
+                    if (serializer != null && serializer.IsAttached)
                     {
                         TakeDamage newEvent = TakeDamage.Create(serializer);
                         newEvent.Amount = 1;
