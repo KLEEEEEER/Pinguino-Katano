@@ -1,13 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Bolt;
 
-public class Damageable : MonoBehaviour
+public class Damageable : EntityEventListener<IPenguinState>
 {
     [SerializeField] private Health health;
     [SerializeField] Color deadColor;
     [SerializeField] Renderer meshRenderer;
-    public void TakeDamage(float amount)
+
+    public void TakeDamage(int amount)
     {
         health.Remove(amount);
             //MainUIManager.Instance.ChangeHealthString(health.ToString());

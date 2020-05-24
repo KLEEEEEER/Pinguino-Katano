@@ -1,22 +1,55 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Bolt;
 
-public class Health : MonoBehaviour
+public class Health : Bolt.EntityEventListener<IPenguinState>
 {
-    [SerializeField] private float health;
-    [SerializeField] private float maxHealth;
+    [SerializeField] private int health;
+    [SerializeField] private int maxHealth;
     [SerializeField] private bool startWithMaxHealth;
 
-    private void Start()
+    public override void Attached()
     {
-        if (startWithMaxHealth)
-            health = maxHealth;
+        if (entity.IsOwner)
+        {
+            if (startWithMaxHealth)
+                //health = maxHealth;
+                state.Health = maxHealth;
+            else
+                state.Health = health;
+        }
+
+        state.AddCallback("Health", HealthChangedCallback);
     }
 
-    public float Current { get => health; }
-    public void Remove(float amount)
+    public void HealthChangedCallback()
     {
-        health -= amount;
+        health = state.Health;
+
+        if (state.Health <= 0)
+        {
+            Dead();
+        }
+    }
+
+    private void Dead()
+    {
+        BoltNetwork.Destroy(gameObject);
+        //state.IsDead = true;
+        //state.respawnFrame = BoltNetwork.ServerFrame + (4 * BoltNetwork.FramesPerSecond);
+    }
+
+    public float Current { get => state.Health; }
+    public void Remove(int amount)
+    {
+        if (entity.IsOwner)
+            state.Health -= amount;
+    }
+
+    public override void OnEvent(TakeDamage evnt)
+    {
+        if (evnt.Amount > 0)
+            Remove(evnt.Amount);
     }
 }

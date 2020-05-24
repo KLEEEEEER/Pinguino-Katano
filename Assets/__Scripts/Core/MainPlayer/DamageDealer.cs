@@ -2,8 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Bolt;
 
-public class DamageDealer : MonoBehaviour
+public class DamageDealer : EntityEventListener<IPenguinState>
 {
     [SerializeField] private float attackRadius = 2f;
     [SerializeField] MainPlayerMovementFSM mainPlayerMovementFSM;
@@ -12,16 +13,18 @@ public class DamageDealer : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Collider[] colliders = Physics.OverlapSphere(weaponPosition.position, attackRadius, layerMask);
-        if (mainPlayerMovementFSM.currentState == mainPlayerMovementFSM.AttackingReadyState && colliders.Length > 0)
+        using (var hits = BoltNetwork.OverlapSphereAll(weaponPosition.position, attackRadius))
         {
-            foreach (Collider collider in colliders)
+            if (mainPlayerMovementFSM.currentState == mainPlayerMovementFSM.AttackingReadyState && hits.count > 0)
             {
-                Damageable player = collider.gameObject.GetComponent<Damageable>();
-                if (player != null)
+                for (int i = 0; i < hits.count; ++i)
                 {
-                    Debug.Log("Attacking player");
-                    player.TakeDamage(1);
+                    var hit = hits.GetHit(i);
+                    var serializer = hit.body.GetComponent<Damageable>();
+                    if (serializer != null)
+                    {
+                        serializer.TakeDamage(1);
+                    }
                 }
             }
         }

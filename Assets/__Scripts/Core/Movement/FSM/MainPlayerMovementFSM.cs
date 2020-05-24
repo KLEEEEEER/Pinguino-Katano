@@ -13,6 +13,7 @@ namespace PinguinoKatano.Core.Movement
         public GameObject WeaponSlot;
         public bool AirControl = false;
         public bool AttackControl = false;
+        public bool IsAttacking = false;
         [Range(0f, 10f)]
         public float AttackControlMovementMultiplier = 1f;
 
@@ -34,7 +35,11 @@ namespace PinguinoKatano.Core.Movement
 
         public override void Attached()
         {
+            if (!entity.IsOwner) return;
+            state.IsDead = false;
             state.SetTransforms(state.Transform, transform);
+            state.AddCallback("IsAttacking", IsAttackingChangedCallback);
+            state.IsAttacking = false;
         }
 
         private void Start()
@@ -50,6 +55,7 @@ namespace PinguinoKatano.Core.Movement
 
         public void EnterState(State state)
         {
+            if (!entity.IsOwner) return;
             currentState = state;
             state.OnEnterState(this);
         }
@@ -65,6 +71,11 @@ namespace PinguinoKatano.Core.Movement
         public override void SimulateOwner()
         {
             currentState.OnFixedUpdate(this);
+        }
+
+        public void IsAttackingChangedCallback()
+        {
+            IsAttacking = state.IsAttacking;
         }
 
         public void MoveFixed(float speedModifier = 1f)
