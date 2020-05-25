@@ -293,6 +293,29 @@
       "Name": "LogEvent",
       "Guid": "0de8ccf0-ad65-4cb9-9252-e9a573812bfd",
       "Groups": []
+    },
+    {
+      "$type": "Bolt.Compiler.EventDefinition, bolt.compiler",
+      "Properties": [
+        {
+          "Name": "Name",
+          "Enabled": true,
+          "Expanded": true,
+          "ReplicationMode": 1,
+          "Priority": 1,
+          "PropertyType": {
+            "$type": "Bolt.Compiler.PropertyTypeString, bolt.compiler",
+            "MaxLength": 32,
+            "Encoding": 1
+          },
+          "AssetSettings": {
+            "$type": "Bolt.Compiler.PropertyEventSettings, bolt.compiler"
+          }
+        }
+      ],
+      "Name": "StateChanged",
+      "Guid": "f2fa6200-ea50-4e5a-986e-01b5f92cd733",
+      "Groups": []
     }
   ],
   "ActiveGroup": "Everything"

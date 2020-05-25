@@ -8,19 +8,19 @@ namespace PinguinoKatano.Core.Movement {
 
             if (Mathf.Abs(playerFSM.horizontalInput) > 0 || Mathf.Abs(playerFSM.verticalInput) > 0)
             {
-                playerFSM.EnterState(playerFSM.RunningState);
+                playerFSM.EnterState(playerFSM.runningState, true);
                 return;
             }
 
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                playerFSM.EnterState(playerFSM.jumpingState);
+                playerFSM.EnterState(playerFSM.jumpingState, true);
                 return;
             }
 
             if (Input.GetKey(KeyCode.Mouse0))
             {
-                playerFSM.EnterState(playerFSM.AttackingReadyState);
+                playerFSM.EnterState(playerFSM.attackingReadyState, true);
                 return;
             }
         }

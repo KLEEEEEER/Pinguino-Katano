@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using Bolt;
+using System;
 
 namespace PinguinoKatano.Core.Movement
 {
-    public class MainPlayerMovementFSM : EntityBehaviour<IPenguinState>
+    public class MainPlayerMovementFSM : EntityEventListener<IPenguinState>
     {
         public State currentState;
         public Rigidbody rigidbody;
@@ -27,43 +28,98 @@ namespace PinguinoKatano.Core.Movement
 
         public State idleState;
         public State jumpingState;
-        public State RunningState;
-        public State AttackingReadyState;
-        public State RollingState;
+        public State runningState;
+        public State attackingReadyState;
+        public State rollingState;
+
+        public IPenguinState boltState;
 
         private float timerChangingRigidbodyVelocity;
 
         public override void Attached()
         {
+            boltState = state;
+            state.AddCallback("IsAttacking", IsAttackingChangedCallback);
             if (!entity.IsOwner) return;
             state.IsDead = false;
             state.SetTransforms(state.Transform, transform);
-            state.AddCallback("IsAttacking", IsAttackingChangedCallback);
             state.IsAttacking = false;
         }
 
         private void Start()
         {
-            idleState = new IdleState();
-            jumpingState = new JumpingState();
-            RunningState = new RunningState();
-            AttackingReadyState = new AttackingReadyState();
-            RollingState = new RollingState();
+            if (entity.IsOwner)
+            {
+                idleState = new IdleState();
+                jumpingState = new JumpingState();
+                runningState = new RunningState();
+                attackingReadyState = new AttackingReadyState();
+                rollingState = new RollingState();
+            }
+            else
+            {
+                idleState = new NetworkIdleState();
+                jumpingState = new NetworkJumpingState();
+                runningState = new NetworkRunningState();
+                attackingReadyState = new NetworkAttackingReadyState();
+                rollingState = new NetworkRollingState();
+            }
+
+            Debug.Log("Вот оно что: " + nameof(idleState));
 
             currentState = idleState;
         }
 
-        public void EnterState(State state)
+        public void EnterState(State state, bool sendEvent = false)
         {
-            if (!entity.IsOwner) return;
             currentState = state;
+
+            if (sendEvent)
+                SendStateChangedEvent();
+
             state.OnEnterState(this);
+        }
+
+        private void SendStateChangedEvent()
+        {
+            StateChanged stateChangedEvent = StateChanged.Create(entity);
+            Type currentStateType = currentState.GetType();
+            stateChangedEvent.Name = currentStateType.Name;
+            stateChangedEvent.Send();
+        }
+
+        public override void OnEvent(StateChanged evnt)
+        {
+            if (entity.IsOwner) return;
+            WeaponSlot.SetActive(false);
+            switch (evnt.Name)
+            {
+                case nameof(IdleState):
+                    EnterState(idleState);
+                    break;
+                case nameof(JumpingState):
+                    EnterState(jumpingState);
+                    break;
+                case nameof(RunningState):
+                    EnterState(runningState);
+                    break;
+                case nameof(AttackingReadyState):
+                    EnterState(attackingReadyState);
+                    break;
+                case nameof(RollingState):
+                    break;
+            }
+            Debug.Log("Changed event to " + evnt.Name);
         }
 
         private void Update()
         {
-            horizontalInput = Input.GetAxisRaw("Horizontal");
-            verticalInput   = Input.GetAxisRaw("Vertical");
+            //if (!entity.IsOwner) return;
+            if (entity.IsOwner)
+            {
+                horizontalInput = Input.GetAxisRaw("Horizontal");
+                verticalInput = Input.GetAxisRaw("Vertical");
+            }
 
             currentState.OnUpdate(this);
         }
@@ -75,6 +131,7 @@ namespace PinguinoKatano.Core.Movement
 
         public void IsAttackingChangedCallback()
         {
+            Debug.Log("Changed IsAttacking and IsAttackingChangedCallback Raised");
             IsAttacking = state.IsAttacking;
         }
 

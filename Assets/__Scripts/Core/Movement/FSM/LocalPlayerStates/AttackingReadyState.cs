@@ -14,13 +14,13 @@ public class AttackingReadyState : State
         if (Input.GetKey(KeyCode.Mouse0))
         {
             playerFSM.WeaponSlot.SetActive(true);
-            playerFSM.IsAttacking = true;
+            playerFSM.state.IsAttacking = true;
         }
         else
         {
             playerFSM.WeaponSlot.SetActive(false);
-            playerFSM.IsAttacking = false;
-            playerFSM.EnterState(playerFSM.idleState);
+            playerFSM.state.IsAttacking = false;
+            playerFSM.EnterState(playerFSM.idleState, true);
             return;
         }
     }

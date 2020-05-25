@@ -15,7 +15,7 @@ public class DamageDealer : EntityEventListener<IPenguinState>
     {
         using (var hits = BoltNetwork.OverlapSphereAll(weaponPosition.position, attackRadius))
         {
-            if (mainPlayerMovementFSM.currentState == mainPlayerMovementFSM.AttackingReadyState && hits.count > 0)
+            if (mainPlayerMovementFSM.currentState == mainPlayerMovementFSM.attackingReadyState && hits.count > 0)
             {
                 for (int i = 0; i < hits.count; ++i)
                 {

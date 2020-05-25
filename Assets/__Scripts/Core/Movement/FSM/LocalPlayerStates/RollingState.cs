@@ -20,7 +20,7 @@ namespace PinguinoKatano.Core.Movement
 
             if (timerTime >= timeBeforeRollCompleted)
             {
-                playerFSM.EnterState(playerFSM.idleState);
+                playerFSM.EnterState(playerFSM.idleState, true);
             }
         }
     }

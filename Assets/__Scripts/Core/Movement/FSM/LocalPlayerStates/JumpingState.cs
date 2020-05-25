@@ -37,7 +37,7 @@ namespace PinguinoKatano.Core.Movement
                 if (colliders.Length > 0)
                 {
                     isJumping = false;
-                    playerFSM.EnterState(playerFSM.idleState);
+                    playerFSM.EnterState(playerFSM.idleState, true);
                 }
             }
         }

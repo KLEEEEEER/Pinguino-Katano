@@ -10,26 +10,26 @@ namespace PinguinoKatano.Core.Movement
         {
             if (Mathf.Abs(playerFSM.horizontalInput) == 0 && Mathf.Abs(playerFSM.verticalInput) == 0)
             {
-                playerFSM.EnterState(playerFSM.idleState);
+                playerFSM.EnterState(playerFSM.idleState, true);
                 return;
             }
 
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                playerFSM.EnterState(playerFSM.jumpingState);
+                playerFSM.EnterState(playerFSM.jumpingState, true);
                 return;
             }
 
             if (Input.GetKey(KeyCode.Mouse0))
             {
-                playerFSM.EnterState(playerFSM.AttackingReadyState);
+                playerFSM.EnterState(playerFSM.attackingReadyState, true);
                 return;
             }
 
             if (Input.GetKeyDown(KeyCode.LeftShift) && playerFSM.IsMoving())
             {
                 Debug.Log("Shift pressed!");
-                playerFSM.EnterState(playerFSM.RollingState);
+                playerFSM.EnterState(playerFSM.rollingState, true);
             } 
         }
 
