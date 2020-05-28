@@ -44,6 +44,8 @@ namespace PinguinoKatano.Core.Movement
             state.IsDead = false;
             state.SetTransforms(state.Transform, transform);
             state.IsAttacking = false;
+            state.Kills = 0;
+            state.Deaths = 0;
         }
 
         private void Start()

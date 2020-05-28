@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Bolt;
 using PinguinoKatano.Network;
+using PinguinoKatano.UI;
 
+[RequireComponent(typeof(Rigidbody))]
 public class Health : Bolt.EntityEventListener<IPenguinState>
 {
     [SerializeField] private int health;
@@ -11,6 +13,19 @@ public class Health : Bolt.EntityEventListener<IPenguinState>
     [SerializeField] private bool startWithMaxHealth;
     [SerializeField] private GameObject bodyToDiactivate;
     [SerializeField] private Collider colliderToDiactivate;
+    [SerializeField] private PlayerInfo playerInScoreboard;
+    private Rigidbody rigidbody;
+    private bool isDead = false;
+
+    public void SetPlayerInfo(PlayerInfo playerInfo)
+    {
+        playerInScoreboard = playerInfo;
+    }
+
+    private void Start()
+    {
+        rigidbody = GetComponent<Rigidbody>();
+    }
 
     public override void Attached()
     {
@@ -24,21 +39,48 @@ public class Health : Bolt.EntityEventListener<IPenguinState>
         }
 
         NetworkCallbacks.AllPlayers.Add(this);
+        playerInScoreboard = PlayersList.Instance.AddNewPlayerInfo(entity, state.PlayerName);
         state.AddCallback("Health", HealthChangedCallback);
+        state.AddCallback("IsDead", IsDeadChangedCallback);
+        state.AddCallback("Kills", KDChangedCallback);
+        state.AddCallback("Deaths", KDChangedCallback);
     }
 
     public override void Detached()
     {
+        PlayersList.Instance.RemovePlayerInfo(entity);
         NetworkCallbacks.AllPlayers.Remove(this);
+        playerInScoreboard = null;
     }
 
     public void HealthChangedCallback()
     {
         health = state.Health;
 
-        if (state.Health <= 0)
+        /*if (state.Health <= 0)
         {
             Dead();
+        }*/
+    }
+
+    public void KDChangedCallback()
+    {
+        KDChanged newEvent = KDChanged.Create();
+        newEvent.Entity = entity;
+        newEvent.Send();
+    }
+
+    public void IsDeadChangedCallback()
+    {
+        isDead = state.IsDead;
+
+        if (isDead)
+        {
+            bodyToDiactivate.SetActive(false);
+        }
+        else
+        {
+            bodyToDiactivate.SetActive(true);
         }
     }
 
@@ -46,9 +88,8 @@ public class Health : Bolt.EntityEventListener<IPenguinState>
     {
         if (entity)
         {
-            //BoltNetwork.Destroy(entity.gameObject);
-            bodyToDiactivate.SetActive(false);
             colliderToDiactivate.enabled = false;
+            rigidbody.isKinematic = true;
             state.IsDead = true;
             state.RespawnFrame = BoltNetwork.ServerFrame + (4 * BoltNetwork.FramesPerSecond);
         }
@@ -56,14 +97,17 @@ public class Health : Bolt.EntityEventListener<IPenguinState>
 
     public void Spawn()
     {
+        if (entity.IsOwner)
+        {
+            entity.transform.position = RandomSpawn();
+        }
+
         if (entity)
         {
             state.IsDead = false;
-            state.Health = 100;
-            bodyToDiactivate.SetActive(true);
+            state.Health = maxHealth;
             colliderToDiactivate.enabled = true;
-            // teleport
-            entity.transform.position = RandomSpawn();
+            rigidbody.isKinematic = false;
         }
     }
 
@@ -83,7 +127,19 @@ public class Health : Bolt.EntityEventListener<IPenguinState>
 
     public override void OnEvent(TakeDamage evnt)
     {
-        if (evnt.Amount > 0)
+       if (evnt.Amount > 0)
             Remove(evnt.Amount);
+
+       if (entity.IsOwner)
+        {
+            if (health <= 0 && !isDead)
+            {
+                Killed.Create(evnt.From).Send();
+                state.Deaths += 1;
+                isDead = true;
+                Dead();
+            }
+        }
+       
     }
 }

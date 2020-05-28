@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(MainPlayerMovementFSM))]
-public class MainPlayerAttack : EntityBehaviour<IPenguinState>
+public class MainPlayerAttack : EntityEventListener<IPenguinState>
 {
     [SerializeField] MainPlayerMovementFSM mainPlayerMovementFSM;
     [SerializeField] private float attackRadius = 2f;
@@ -17,40 +17,23 @@ public class MainPlayerAttack : EntityBehaviour<IPenguinState>
         if (!entity.IsOwner) return;
         if (!mainPlayerMovementFSM.IsAttacking) return;
 
-        //using (var hits = BoltNetwork.OverlapSphereAll(weaponPosition.position, attackRadius, BoltNetwork.ServerFrame))
-        //using (var hits = BoltNetwork.OverlapSphereAll(state.Transform.Position, 10f, BoltNetwork.ServerFrame))
         Collider[] hits = Physics.OverlapSphere(weaponPosition.position, attackRadius, layerMask);
-        //{
-            //Debug.Log($"hits.count = {hits.Length}");
-            if (hits.Length > 0)
+        if (hits.Length > 0)
+        {
+            for (int i = 0; i < hits.Length; ++i)
             {
-                for (int i = 0; i < hits.Length; ++i)
+                Collider hit = hits[i];
+                if (hit.gameObject == gameObject) continue;
+                var serializer = hit.GetComponent<BoltEntity>();
+                if (serializer != null && serializer.IsAttached && !serializer.GetState<IPenguinState>().IsDead)
                 {
-                    Collider hit = hits[i];
-                    if (hit.gameObject == gameObject) continue;
-                    var serializer = hit.GetComponent<BoltEntity>();
-                    if (serializer != null && serializer.IsAttached)
-                    {
-                        TakeDamage newEvent = TakeDamage.Create(serializer);
-                        newEvent.Amount = 1;
-                        newEvent.Send();
-                    }
+                    TakeDamage newEvent = TakeDamage.Create(serializer);
+                    newEvent.Amount = 1;
+                    newEvent.From = entity;
+                    newEvent.Send();
                 }
             }
-       // }
-
-
-        /*Collider[] colliders = Physics.OverlapSphere(weaponPosition.position, attackRadius, layerMask);
-        if (mainPlayerMovementFSM.currentState == mainPlayerMovementFSM.AttackingReadyState && colliders.Length > 0)
-        {
-            foreach (Collider collider in colliders)
-            {
-                if (collider.gameObject == gameObject) continue;
-
-                //takeDamage(1, collider.gameObject);
-                takeDamage(1, collider.gameObject);
-            }
-        }*/
+        }
     }
 
     private void takeDamage(int amount, GameObject _gameObject)
@@ -67,5 +50,14 @@ public class MainPlayerAttack : EntityBehaviour<IPenguinState>
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(weaponPosition.position, attackRadius);
+    }
+
+    public override void OnEvent(Killed evnt)
+    {
+        if (entity.IsOwner)
+        {
+            state.Kills += 1;
+            Debug.Log("I Killed someone! My kills now: " + state.Kills);
+        }
     }
 }
