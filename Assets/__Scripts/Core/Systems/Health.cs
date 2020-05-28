@@ -31,6 +31,8 @@ public class Health : Bolt.EntityEventListener<IPenguinState>
     {
         if (entity.IsOwner)
         {
+            state.PlayerName = PlayerNameInput.DisplayName;
+
             if (startWithMaxHealth)
                 //health = maxHealth;
                 state.Health = maxHealth;
@@ -42,6 +44,7 @@ public class Health : Bolt.EntityEventListener<IPenguinState>
         playerInScoreboard = PlayersList.Instance.AddNewPlayerInfo(entity, state.PlayerName);
         state.AddCallback("Health", HealthChangedCallback);
         state.AddCallback("IsDead", IsDeadChangedCallback);
+        state.AddCallback("PlayerName", KDChangedCallback);
         state.AddCallback("Kills", KDChangedCallback);
         state.AddCallback("Deaths", KDChangedCallback);
     }
