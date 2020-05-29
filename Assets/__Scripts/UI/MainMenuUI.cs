@@ -155,7 +155,7 @@ public class MainMenuUI : GlobalEventListener
 
     public void BackFromFoundingLobby()
     {
-
+        BoltLauncher.Shutdown();
         DisableAllScreens();
         mainTitleScreen.SetActive(true);
     }

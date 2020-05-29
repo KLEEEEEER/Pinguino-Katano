@@ -13,6 +13,7 @@ public class CameraBillboard : MonoBehaviour
 
     private void Update()
     {
+        if (mainCamera == null) return;
         transform.LookAt(mainCamera.transform);
         Quaternion tempRotation = transform.rotation;
         Vector3 tempEulerAngles = tempRotation.eulerAngles;

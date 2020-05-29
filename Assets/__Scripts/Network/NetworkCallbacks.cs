@@ -52,10 +52,16 @@ namespace PinguinoKatano.Network
             }
         }
 
-        
-
         public override void Disconnected(BoltConnection connection)
         {
+            LogEvent newLogEvent = LogEvent.Create();
+            newLogEvent.Message = "Player disconnected";
+            newLogEvent.Send();
+        }
+
+        public override void BoltShutdownBegin(AddCallback registerDoneCallback)
+        {
+            AllPlayers.Clear();
             SceneManager.LoadScene(0);
         }
     }

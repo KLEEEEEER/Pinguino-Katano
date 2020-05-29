@@ -9,6 +9,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Rigidbody))]
 public class Health : Bolt.EntityEventListener<IPenguinState>
 {
+    [SerializeField] private float respawnTime = 4f;
     [SerializeField] private int health;
     [SerializeField] private int maxHealth;
     [SerializeField] private bool startWithMaxHealth;
@@ -17,6 +18,8 @@ public class Health : Bolt.EntityEventListener<IPenguinState>
     [SerializeField] private PlayerInfo playerInScoreboard;
     [SerializeField] private RectTransform currentHealthBar;
     [SerializeField] private Text nameHealthBar;
+    [SerializeField] private GameObject ragdollPrefab;
+    [SerializeField] private Vector3 damagePosition = Vector3.zero;
     private Rigidbody rigidbody;
     private bool isDead = false;
 
@@ -56,7 +59,8 @@ public class Health : Bolt.EntityEventListener<IPenguinState>
 
     public override void Detached()
     {
-        PlayersList.Instance.RemovePlayerInfo(entity);
+        if (PlayersList.Instance != null)
+            PlayersList.Instance.RemovePlayerInfo(entity);
         NetworkCallbacks.AllPlayers.Remove(this);
         playerInScoreboard = null;
     }
@@ -91,10 +95,15 @@ public class Health : Bolt.EntityEventListener<IPenguinState>
         if (isDead)
         {
             bodyToDiactivate.SetActive(false);
+            colliderToDiactivate.enabled = false;
+            rigidbody.isKinematic = true;
+            StartCoroutine(spawnRagdoll());
         }
         else
         {
             bodyToDiactivate.SetActive(true);
+            colliderToDiactivate.enabled = true;
+            rigidbody.isKinematic = false;
         }
     }
 
@@ -102,11 +111,28 @@ public class Health : Bolt.EntityEventListener<IPenguinState>
     {
         if (entity)
         {
-            colliderToDiactivate.enabled = false;
-            rigidbody.isKinematic = true;
             state.IsDead = true;
-            state.RespawnFrame = BoltNetwork.ServerFrame + (4 * BoltNetwork.FramesPerSecond);
+            state.RespawnFrame = BoltNetwork.ServerFrame + ((int)respawnTime * BoltNetwork.FramesPerSecond);
         }
+    }
+
+    IEnumerator spawnRagdoll()
+    {
+        /*BoltEntity ragdoll = BoltNetwork.Instantiate(ragdollPrefab, transform.position, Quaternion.identity);
+        yield return new WaitForSeconds(respawnTime);
+        BoltNetwork.Destroy(ragdoll);*/
+        GameObject ragdoll = Instantiate(ragdollPrefab, transform.position, Quaternion.identity);
+        Rigidbody rigidbody = ragdoll.GetComponent<Rigidbody>();
+        if (rigidbody != null)
+        {
+            if (damagePosition != Vector3.zero)
+            {
+                rigidbody.AddForce(transform.position - damagePosition, ForceMode.Impulse);
+                damagePosition = Vector3.zero;
+            }
+        } 
+        yield return new WaitForSeconds(respawnTime);
+        Destroy(ragdoll);
     }
 
     public void Spawn()
@@ -121,8 +147,6 @@ public class Health : Bolt.EntityEventListener<IPenguinState>
             state.IsDead = false;
             state.Health = maxHealth;
             UpdateHealthBarValue();
-            colliderToDiactivate.enabled = true;
-            rigidbody.isKinematic = false;
         }
     }
 
@@ -142,7 +166,9 @@ public class Health : Bolt.EntityEventListener<IPenguinState>
 
     public override void OnEvent(TakeDamage evnt)
     {
-       if (evnt.Amount > 0)
+        damagePosition = evnt.From.transform.position;
+
+        if (evnt.Amount > 0)
             Remove(evnt.Amount);
 
        if (entity.IsOwner)
@@ -155,7 +181,6 @@ public class Health : Bolt.EntityEventListener<IPenguinState>
                 Dead();
             }
         }
-       
     }
 
     private void UpdateHealthBarValue()

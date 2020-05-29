@@ -356,6 +356,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b105072afec873458235bf0581eb130, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  respawnTime: 4
   health: 100
   maxHealth: 100
   startWithMaxHealth: 1
@@ -364,6 +365,8 @@ MonoBehaviour:
   playerInScoreboard: {fileID: 0}
   currentHealthBar: {fileID: 4647355680639157169}
   nameHealthBar: {fileID: 6815500599877880617}
+  ragdollPrefab: {fileID: 1884203933801751563, guid: d7771194b073cb84984f24611a486f7d,
+    type: 3}
 --- !u!114 &3199802615472976973
 MonoBehaviour:
   m_ObjectHideFlags: 0

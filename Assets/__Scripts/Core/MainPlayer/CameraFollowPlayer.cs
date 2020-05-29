@@ -15,7 +15,7 @@ public class CameraFollowPlayer : EntityBehaviour<IPenguinState>
 
     private void Update()
     {
-        if (entity.IsOwner)
+        if (entity.IsOwner && mainCamera != null)
             mainCamera.transform.position = transform.position + offset;
     }
 }
