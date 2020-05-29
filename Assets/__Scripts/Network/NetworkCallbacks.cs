@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Bolt;
+using UnityEngine.SceneManagement;
 
 namespace PinguinoKatano.Network
 {
@@ -12,8 +13,7 @@ namespace PinguinoKatano.Network
 
         public override void SceneLoadLocalDone(string scene)
         {
-            // randomize a position
-            var spawnPosition = new Vector3(Random.Range(-16, 16), 0, Random.Range(-16, 16));
+            var spawnPosition = Health.RandomSpawn();
 
             // instantiate cube
             BoltNetwork.Instantiate(BoltPrefabs.MainPlayer, spawnPosition, Quaternion.identity);
@@ -50,6 +50,13 @@ namespace PinguinoKatano.Network
                     player.Spawn();
                 }
             }
+        }
+
+        
+
+        public override void Disconnected(BoltConnection connection)
+        {
+            SceneManager.LoadScene(0);
         }
     }
 }

@@ -4,6 +4,7 @@ using UnityEngine;
 using Bolt;
 using PinguinoKatano.Network;
 using PinguinoKatano.UI;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(Rigidbody))]
 public class Health : Bolt.EntityEventListener<IPenguinState>
@@ -14,6 +15,8 @@ public class Health : Bolt.EntityEventListener<IPenguinState>
     [SerializeField] private GameObject bodyToDiactivate;
     [SerializeField] private Collider colliderToDiactivate;
     [SerializeField] private PlayerInfo playerInScoreboard;
+    [SerializeField] private RectTransform currentHealthBar;
+    [SerializeField] private Text nameHealthBar;
     private Rigidbody rigidbody;
     private bool isDead = false;
 
@@ -29,6 +32,13 @@ public class Health : Bolt.EntityEventListener<IPenguinState>
 
     public override void Attached()
     {
+        state.AddCallback("Health", HealthChangedCallback);
+        state.AddCallback("IsDead", IsDeadChangedCallback);
+        state.AddCallback("PlayerName", KDChangedCallback);
+        state.AddCallback("PlayerName", HealthbarNameChangedCallback);
+        state.AddCallback("Kills", KDChangedCallback);
+        state.AddCallback("Deaths", KDChangedCallback);
+
         if (entity.IsOwner)
         {
             state.PlayerName = PlayerNameInput.DisplayName;
@@ -42,11 +52,6 @@ public class Health : Bolt.EntityEventListener<IPenguinState>
 
         NetworkCallbacks.AllPlayers.Add(this);
         playerInScoreboard = PlayersList.Instance.AddNewPlayerInfo(entity, state.PlayerName);
-        state.AddCallback("Health", HealthChangedCallback);
-        state.AddCallback("IsDead", IsDeadChangedCallback);
-        state.AddCallback("PlayerName", KDChangedCallback);
-        state.AddCallback("Kills", KDChangedCallback);
-        state.AddCallback("Deaths", KDChangedCallback);
     }
 
     public override void Detached()
@@ -59,11 +64,17 @@ public class Health : Bolt.EntityEventListener<IPenguinState>
     public void HealthChangedCallback()
     {
         health = state.Health;
+        UpdateHealthBarValue();
 
         /*if (state.Health <= 0)
         {
             Dead();
         }*/
+    }
+
+    public void HealthbarNameChangedCallback()
+    {
+        nameHealthBar.text = state.PlayerName;
     }
 
     public void KDChangedCallback()
@@ -109,15 +120,16 @@ public class Health : Bolt.EntityEventListener<IPenguinState>
         {
             state.IsDead = false;
             state.Health = maxHealth;
+            UpdateHealthBarValue();
             colliderToDiactivate.enabled = true;
             rigidbody.isKinematic = false;
         }
     }
 
-    static Vector3 RandomSpawn()
+    public static Vector3 RandomSpawn()
     {
-        float x = Random.Range(-16f, 16f);
-        float z = Random.Range(-16f, 16f);
+        float x = Random.Range(-5f, 5f);
+        float z = Random.Range(-5f, 5f);
         return new Vector3(x, 1f, z);
     }
 
@@ -144,5 +156,13 @@ public class Health : Bolt.EntityEventListener<IPenguinState>
             }
         }
        
+    }
+
+    private void UpdateHealthBarValue()
+    {
+        Vector3 tempAnchorMax = currentHealthBar.anchorMax;
+        float value = (float)health / maxHealth;
+        tempAnchorMax.x = value;
+        currentHealthBar.anchorMax = tempAnchorMax;
     }
 }

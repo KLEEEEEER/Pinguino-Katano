@@ -26,7 +26,15 @@ public class MainMenuUI : GlobalEventListener
 
     private void Start()
     {
-
+        Debug.Log(PlayerNameInput.DisplayName);
+        if (string.IsNullOrEmpty(PlayerNameInput.DisplayName))
+        {
+            changeNameScreen.SetActive(true);
+        }
+        else
+        {
+            mainTitleScreen.SetActive(true);
+        }
     }
 
     #region Singleton

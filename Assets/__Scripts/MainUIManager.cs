@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class MainUIManager : MonoBehaviour
 {
-    [SerializeField] Text healthText;
+    [SerializeField] GameObject scoreboard;
 
     #region Singleton
     public static MainUIManager Instance;
@@ -24,8 +24,11 @@ public class MainUIManager : MonoBehaviour
     }
     #endregion
 
-    public void ChangeHealthString(string text)
+    private void Update()
     {
-        healthText.text = text;
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            scoreboard.SetActive(!scoreboard.activeSelf);
+        }
     }
 }

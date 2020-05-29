@@ -36,6 +36,8 @@ namespace PinguinoKatano.Core.Movement
 
         private float timerChangingRigidbodyVelocity;
 
+        private Camera mainCamera;
+
         public override void Attached()
         {
             boltState = state;
@@ -50,6 +52,8 @@ namespace PinguinoKatano.Core.Movement
 
         private void Start()
         {
+            mainCamera = Camera.main;
+
             if (entity.IsOwner)
             {
                 idleState = new IdleState();
@@ -66,8 +70,6 @@ namespace PinguinoKatano.Core.Movement
                 attackingReadyState = new NetworkAttackingReadyState();
                 rollingState = new NetworkRollingState();
             }
-
-            Debug.Log("Вот оно что: " + nameof(idleState));
 
             currentState = idleState;
         }
@@ -140,6 +142,7 @@ namespace PinguinoKatano.Core.Movement
         public void MoveFixed(float speedModifier = 1f)
         {
             Vector3 tempVelocity = new Vector3(horizontalInput, 0f, verticalInput);
+
             tempVelocity = Vector3.ClampMagnitude(tempVelocity, 1f);
             tempVelocity = tempVelocity * movementSpeed * speedModifier * Time.fixedDeltaTime;
             tempVelocity.y = rigidbody.velocity.y;
