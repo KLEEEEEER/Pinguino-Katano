@@ -3,17 +3,9 @@ namespace PinguinoKatano.Core.Movement
 {
     public class NetworkJumpingState : NetworkState
     {
-        public override void OnUpdate(MainPlayerMovementFSM playerFSM)
+        public override void OnEnterState(MainPlayerMovementFSM playerFSM)
         {
-            //Debug.Log($"Updating NetworkJumpingState");
-            currentX = playerFSM.boltState.Transform.Position.x;
-            currentY = playerFSM.boltState.Transform.Position.y;
-            currentZ = playerFSM.boltState.Transform.Position.z;
-
-
-            lastX = currentX;
-            lastY = currentY;
-            lastZ = currentZ;
+            playerFSM.anim.SetTrigger("JumpingState");
         }
     }
 }

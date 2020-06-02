@@ -6,6 +6,10 @@ namespace PinguinoKatano.Core.Movement
 {
     public class RunningState : State
     {
+        public override void OnEnterState(MainPlayerMovementFSM playerFSM)
+        {
+            playerFSM.anim.SetTrigger("RunningState");
+        }
         public override void OnUpdate(MainPlayerMovementFSM playerFSM)
         {
             if (Mathf.Abs(playerFSM.horizontalInput) == 0 && Mathf.Abs(playerFSM.verticalInput) == 0)

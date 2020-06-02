@@ -8,6 +8,7 @@ public class AttackingReadyState : State
     public override void OnEnterState(MainPlayerMovementFSM playerFSM)
     {
         playerFSM.IsAttacking = false;
+        playerFSM.anim.SetBool("IsAttackingState", true);
     }
     public override void OnUpdate(MainPlayerMovementFSM playerFSM)
     {
@@ -20,6 +21,7 @@ public class AttackingReadyState : State
         {
             playerFSM.WeaponSlot.SetActive(false);
             playerFSM.state.IsAttacking = false;
+            playerFSM.anim.SetBool("IsAttackingState", false);
             playerFSM.EnterState(playerFSM.idleState, true);
             return;
         }

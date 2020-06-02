@@ -2,6 +2,11 @@
 namespace PinguinoKatano.Core.Movement {
     public class IdleState : State
     {
+        public override void OnEnterState(MainPlayerMovementFSM playerFSM)
+        {
+            playerFSM.anim.SetTrigger("IdleState");
+        }
+
         public override void OnUpdate(MainPlayerMovementFSM playerFSM)
         {
             //playerFSM.Move();

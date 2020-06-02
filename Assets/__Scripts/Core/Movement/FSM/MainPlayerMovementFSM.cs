@@ -18,6 +18,8 @@ namespace PinguinoKatano.Core.Movement
         [Range(0f, 10f)]
         public float AttackControlMovementMultiplier = 1f;
 
+        public Animator anim;
+
         [Header("Transforms")]
         public Transform GroundCheckPoint;
         public float GroundCheckRadius = 0.2f;

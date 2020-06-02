@@ -5,13 +5,14 @@ namespace PinguinoKatano.Core.Movement
     public class RollingState : State
     {
         private float timerTime = 0;
-        private float timeBeforeRollCompleted = 1f;
+        private float timeBeforeRollCompleted = 1.5f;
         public override void OnEnterState(MainPlayerMovementFSM playerFSM)
         {
             timerTime = 0;
             Vector3 direction = new Vector3(playerFSM.horizontalInput, 0f, playerFSM.verticalInput);
             //playerFSM.rigidbody.AddForce(direction.normalized * playerFSM.RollingForce, ForceMode.Impulse);
             playerFSM.ApplyForce(direction.normalized * playerFSM.RollingForce, ForceMode.Impulse);
+            playerFSM.anim.SetTrigger("RollingState");
         }
 
         public override void OnUpdate(MainPlayerMovementFSM playerFSM)

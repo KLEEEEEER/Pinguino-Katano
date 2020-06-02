@@ -12,6 +12,7 @@ namespace PinguinoKatano.Core.Movement
             timerTime = 0;
             //playerFSM.rigidbody.AddForce(Vector3.up * playerFSM.JumpingForce, ForceMode.Impulse);
             playerFSM.ApplyForce(Vector3.up * playerFSM.JumpingForce, ForceMode.Impulse);
+            playerFSM.anim.SetTrigger("JumpingState");
         }
 
         public override void OnUpdate(MainPlayerMovementFSM playerFSM)
