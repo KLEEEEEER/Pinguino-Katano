@@ -121,7 +121,9 @@ public class Health : Bolt.EntityEventListener<IPenguinState>
         /*BoltEntity ragdoll = BoltNetwork.Instantiate(ragdollPrefab, transform.position, Quaternion.identity);
         yield return new WaitForSeconds(respawnTime);
         BoltNetwork.Destroy(ragdoll);*/
-        GameObject ragdoll = Instantiate(ragdollPrefab, transform.position, Quaternion.identity);
+        Quaternion ragdollRotation = transform.rotation;
+        ragdollRotation.eulerAngles += new Vector3(0, 180f, 0);
+        GameObject ragdoll = Instantiate(ragdollPrefab, transform.position, ragdollRotation);
         Rigidbody rigidbody = ragdoll.GetComponent<Rigidbody>();
         if (rigidbody != null)
         {

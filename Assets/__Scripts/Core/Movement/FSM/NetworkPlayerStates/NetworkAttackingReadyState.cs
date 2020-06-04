@@ -13,13 +13,13 @@ public class NetworkAttackingReadyState : NetworkState
         if (playerFSM.IsAttacking)
         {
             Debug.Log("IsAttacking! im attacking");
-            playerFSM.WeaponSlot.SetActive(true);
+            //playerFSM.WeaponSlot.SetActive(true);
             playerFSM.anim.SetBool("IsAttackingState", true);
         }
         else
         {
             Debug.Log("not IsAttacking! im not attacking");
-            playerFSM.WeaponSlot.SetActive(false);
+            //playerFSM.WeaponSlot.SetActive(false);
             playerFSM.anim.SetBool("IsAttackingState", false);
             return;
         }

@@ -5,7 +5,6 @@ namespace PinguinoKatano.Core.Movement
     public class RollingState : State
     {
         private float timerTime = 0;
-        private float timeBeforeRollCompleted = 1.5f;
         public override void OnEnterState(MainPlayerMovementFSM playerFSM)
         {
             timerTime = 0;
@@ -19,8 +18,9 @@ namespace PinguinoKatano.Core.Movement
         {
             timerTime += Time.deltaTime;
 
-            if (timerTime >= timeBeforeRollCompleted)
+            if (timerTime >= playerFSM.timeBeforeRollCompleted)
             {
+                playerFSM.anim.SetTrigger("RollingEnds");
                 playerFSM.EnterState(playerFSM.idleState, true);
             }
         }

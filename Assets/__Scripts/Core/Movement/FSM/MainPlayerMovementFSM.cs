@@ -11,7 +11,13 @@ namespace PinguinoKatano.Core.Movement
         public float movementSpeed;
         public float JumpingForce;
         public float RollingForce;
-        public GameObject WeaponSlot;
+        public GameObject Sword;
+        public Vector3 InitialSwordRotation = new Vector3(-4.6f, 58.35f, 103.02f);
+        public Vector3 InitialSwordPosition;
+        public Vector3 AttackingSwordRotation = new Vector3(-64.7f, 60.7f, -75.1f);
+        public Vector3 AttackingSwordPosition = new Vector3(0, 0, 0);
+        public Quaternion InitialSwordRotationQuaternion;
+        public Quaternion AttackingSwordRotationQuaternion;
         public bool AirControl = false;
         public bool AttackControl = false;
         public bool IsAttacking = false;
@@ -39,6 +45,7 @@ namespace PinguinoKatano.Core.Movement
         private float timerChangingRigidbodyVelocity;
 
         private Camera mainCamera;
+        public float timeBeforeRollCompleted = 1.5f;
 
         public override void Attached()
         {
@@ -54,6 +61,10 @@ namespace PinguinoKatano.Core.Movement
 
         private void Start()
         {
+            InitialSwordRotationQuaternion.eulerAngles = InitialSwordRotation;
+            AttackingSwordRotationQuaternion.eulerAngles = AttackingSwordRotation;
+            InitialSwordPosition = Sword.transform.position;
+
             mainCamera = Camera.main;
 
             if (entity.IsOwner)
@@ -97,7 +108,8 @@ namespace PinguinoKatano.Core.Movement
         public override void OnEvent(StateChanged evnt)
         {
             if (entity.IsOwner) return;
-            WeaponSlot.SetActive(false);
+            //Sword.SetActive(false);
+            anim.SetBool("IsAttackingState", false);
             switch (evnt.Name)
             {
                 case nameof(IdleState):
@@ -113,6 +125,7 @@ namespace PinguinoKatano.Core.Movement
                     EnterState(attackingReadyState);
                     break;
                 case nameof(RollingState):
+                    EnterState(rollingState);
                     break;
             }
             Debug.Log("Changed event to " + evnt.Name);
