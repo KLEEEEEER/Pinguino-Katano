@@ -1,11 +1,14 @@
-﻿using PinguinoKatano.Network;
+﻿using Bolt;
+using Bolt.Matchmaking;
+using PinguinoKatano.Network;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UdpKit;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MainMenuUI : MonoBehaviour
+public class MainMenuUI : GlobalEventListener
 {
     [SerializeField] private GameObject changeNameScreen;
     [SerializeField] private GameObject mainTitleScreen;
@@ -15,14 +18,23 @@ public class MainMenuUI : MonoBehaviour
     [SerializeField] private GameObject[] screensToDisableFunction;
     [SerializeField] private GameObject searchingLobbyText;
 
-    public event Action OnReadyButtonClicked;
+    List<GameSessionButton> gameSessions = new List<GameSessionButton>();
+    [SerializeField] private GameObject sessionsListContent;
+    [SerializeField] private GameObject sessionPrefab;
 
-    [SerializeField] private PinguinoKatanoNetworkManager networkManager = null;
+    public event Action OnReadyButtonClicked;
 
     private void Start()
     {
-        PinguinoKatanoNetworkManager.OnClientDisconnected += NetworkManager_OnClientDisconnected;
-        PinguinoKatanoNetworkManager.OnClientConnected += NetworkManager_OnClientConnected;
+        Debug.Log(PlayerNameInput.DisplayName);
+        if (string.IsNullOrEmpty(PlayerNameInput.DisplayName))
+        {
+            changeNameScreen.SetActive(true);
+        }
+        else
+        {
+            mainTitleScreen.SetActive(true);
+        }
     }
 
     #region Singleton
@@ -64,48 +76,98 @@ public class MainMenuUI : MonoBehaviour
     public void OnMainMenu_JoinClick()
     {
         DisableAllScreens();
+        BoltLauncher.StartClient();
         joinLobbyScreen.SetActive(true);
     }
 
     public void OnMainMenu_JoinLobbyClick()
     {
         DisableAllScreens();
-        networkManager.StartClient();
+        BoltLauncher.StartClient();
         newLobbyScreen.SetActive(true);
         searchingLobbyText.SetActive(true);
     }
 
     public void OnMainMenu_CreateLobbyClick()
     {
-        networkManager.StartHost();
+        BoltLauncher.StartServer();
         DisableAllScreens();
         newLobbyScreen.SetActive(true);
         searchingLobbyText.SetActive(false);
     }
 
+    public override void BoltStartDone()
+    {
+        if (BoltNetwork.IsServer)
+        {
+            string matchName = Guid.NewGuid().ToString();
+
+            BoltMatchmaking.CreateSession(
+                sessionID: matchName,
+                sceneToLoad: "map_SnowTemple"
+            );
+        }
+    }
+
+    public override void SessionListUpdated(Map<Guid, UdpSession> sessionList)
+    {
+        Debug.LogFormat("Session list updated: {0} total sessions", sessionList.Count);
+
+        clearSessions();
+
+        foreach (var session in sessionList)
+        {
+            UdpSession photonSession = session.Value as UdpSession;
+
+            if (photonSession.Source == UdpSessionSource.Photon)
+            {
+                addSession(photonSession);
+            }
+        }
+    }
+
+    private void clearSessions()
+    {
+        gameSessions.Clear();
+        foreach (Transform child in sessionsListContent.transform)
+        {
+            Destroy(child.gameObject);
+        }
+    }
+
+    private void addSession(UdpSession photonSession)
+    {
+        GameObject newSessionItem = Instantiate(sessionPrefab, sessionsListContent.transform);
+        GameSessionButton newSessionItemGameSession = newSessionItem.GetComponent<GameSessionButton>();
+        if (newSessionItemGameSession != null)
+        {
+            newSessionItemGameSession.SetSessionInfo(photonSession);
+            gameSessions.Add(newSessionItemGameSession);
+        }
+    }
+
     public void BackFromCreatingLobby()
     {
-        networkManager.StopHost();
+
         DisableAllScreens();
         mainTitleScreen.SetActive(true);
     }
 
     public void BackFromFoundingLobby()
     {
-        networkManager.StopClient();
+        BoltLauncher.Shutdown();
         DisableAllScreens();
         mainTitleScreen.SetActive(true);
     }
 
     public void BackToMainMenuClick()
     {
-        networkManager.StopClient();
-        networkManager.StopHost();
+
         DisableAllScreens();
         mainTitleScreen.SetActive(true);
     }
 
-    private void NetworkManager_OnClientDisconnected()
+    /*private void NetworkManager_OnClientDisconnected()
     {
         DisableAllScreens();
         mainTitleScreen.SetActive(true);
@@ -114,7 +176,7 @@ public class MainMenuUI : MonoBehaviour
     private void NetworkManager_OnClientConnected()
     {
         searchingLobbyText.SetActive(false);
-    }
+    }*/
 
     public void DisableAllScreens()
     {
@@ -126,6 +188,6 @@ public class MainMenuUI : MonoBehaviour
 
     private void OnDestroy()
     {
-        PinguinoKatanoNetworkManager.OnClientDisconnected -= NetworkManager_OnClientDisconnected;
+
     }
 }

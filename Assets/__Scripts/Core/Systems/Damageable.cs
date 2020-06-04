@@ -1,18 +1,18 @@
-﻿using Mirror;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Bolt;
 
-public class Damageable : NetworkBehaviour
+public class Damageable : EntityEventListener<IPenguinState>
 {
     [SerializeField] private Health health;
     [SerializeField] Color deadColor;
     [SerializeField] Renderer meshRenderer;
-    public void TakeDamage(float amount)
+
+    public void TakeDamage(int amount)
     {
         health.Remove(amount);
-        if (isLocalPlayer)
-            MainUIManager.Instance.ChangeHealthString(health.ToString());
+            //MainUIManager.Instance.ChangeHealthString(health.ToString());
 
         if (health.Current <= 0)
         {

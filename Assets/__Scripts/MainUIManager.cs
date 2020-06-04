@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MainUIManager : MonoBehaviour
 {
-    [SerializeField] Text healthText;
+    [SerializeField] GameObject scoreboard;
+    [SerializeField] GameObject menu;
 
     #region Singleton
     public static MainUIManager Instance;
@@ -24,8 +26,22 @@ public class MainUIManager : MonoBehaviour
     }
     #endregion
 
-    public void ChangeHealthString(string text)
+    private void Update()
     {
-        healthText.text = text;
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            scoreboard.SetActive(!scoreboard.activeSelf);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            menu.SetActive(!menu.activeSelf);
+        }
+    }
+
+    public void OnDisconnectPressed()
+    {
+        BoltLauncher.Shutdown();
+        SceneManager.LoadScene(0);
     }
 }
